@@ -1,0 +1,9 @@
+
+
+int Division(int a, int b, int h){
+    if((b-a)>0){
+        return (b-a)/h;
+    }
+    else return -1;
+}
+

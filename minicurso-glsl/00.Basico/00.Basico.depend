@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1301101777 source:/home/tamires/cg/minicurso-glsl/00.Basico/src/main.cpp
+	<SDL/SDL.h>
+	<GL/gl.h>
+

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_workspace_file>
+	<Workspace title="Workspace">
+		<Project filename="00.Basico/00.Basico.cbp" />
+		<Project filename="01.Triangulos/01.Triangulos.cbp" />
+		<Project filename="02.Projecao/02.Projecao.cbp" />
+		<Project filename="03.Textura/03.Textura.cbp" />
+		<Project filename="04.Modelo/04.Modelo.cbp" active="1" />
+	</Workspace>
+</CodeBlocks_workspace_file>
