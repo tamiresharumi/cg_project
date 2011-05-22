@@ -116,7 +116,7 @@ Modelo::~Modelo()
 	delete []this->faces;
 }
 
-/*
+
 void Modelo::desenha(void)
 {
 	int i, j;
@@ -147,9 +147,9 @@ void Modelo::desenha(void)
 
 	glEnd();
 }
-*/
 
 
+/*
 void Modelo::desenha()
 {
 	int i, j;
@@ -180,3 +180,4 @@ void Modelo::desenha()
 
 	glEnd();
 }
+*/

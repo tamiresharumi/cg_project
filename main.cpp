@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 	float posPonto[3] = {0, 0, 0};
 	float posLuz[4] = {0,0,2,0};
 	float corLuz[4] = {1,1,1,1};
+
 	float posObs[3] = {5, 3, 0};
 
 	//inicializa a SDL
@@ -25,8 +26,8 @@ int main(int argc, char *argv[])
 	Modelo modelo;
 	Modelo modelo2;
 
-	modelo.carrega("zen.obj");
-    modelo2.carrega("mesa.obj");
+	modelo.carrega("t_sofa3.obj");
+    modelo2.carrega("t_table.obj");
 
 	//loop pra manter o programa aberto
 	while (rodando)
@@ -72,10 +73,12 @@ int main(int argc, char *argv[])
 		glLoadIdentity();
 		//faz a câmera ficar com perspectiva
 		gluPerspective(60, 1, 0.5, 100);
+
+
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glScalef(0.8,0.8,0.8);
-		//glTranslatef(5, 0, 0);
+		glTranslatef(5, 0, 0);
 
 		gluLookAt(posObs[0], posObs[1], posObs[2],
                 0, 0, 0,
@@ -91,9 +94,18 @@ int main(int argc, char *argv[])
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glScalef(0.05,0.05,0.05);
-		gluPerspective(60, 1, 0.5, 10);
-		//glTranslatef(0, 1, 4);
+		glScalef(0.8,0.8,0.8);
+		glTranslatef(-1, 0, 0);
+
+		gluLookAt(posObs[0], posObs[1], posObs[2],
+                0, 0, 0,
+				0, 1, 0);
+
+		//faz as coisas girarem
+		glRotatef(angulo,0,1,0);
+
+		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
 		modelo2.desenha();
 
 
