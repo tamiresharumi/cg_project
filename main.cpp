@@ -38,34 +38,38 @@ int main(int argc, char *argv[])
 			if (e.type == SDL_KEYDOWN){
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 					rodando = 0;
-				if(e.key.keysym.sym == SDLK_LEFT)
-					angulo-=1.f;
-				if(e.key.keysym.sym == SDLK_RIGHT)
-					angulo+=1.f;
-                if(e.key.keysym.sym == SDLK_UP)
-                    posObs[2]+=1.f;
-                if(e.key.keysym.sym == SDLK_DOWN)
-                    posObs[2]-=1.f;
-				if(e.key.keysym.sym == SDLK_a){
-					posObs[0]+=1.f;
-					printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
-				}
-				if(e.key.keysym.sym == SDLK_s){
-					posObs[1]-=1.f;
-					printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
-				}
-				if(e.key.keysym.sym == SDLK_d){
-					posObs[0]-=1.f;
-					printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
-				}
-				if(e.key.keysym.sym == SDLK_w){
-					posObs[1]+=1.f;
-					printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
-				}
 			}
 			if (e.type == SDL_QUIT)
 				rodando = 0;
 		}
+
+		Uint8 *teclado = SDL_GetKeyState(0);
+		
+		if (teclado[SDLK_LEFT])
+			angulo -= 1;
+		if (teclado[SDLK_RIGHT])
+			angulo += 1;
+		if (teclado[SDLK_UP])
+			posObs[2] += 1;
+		if (teclado[SDLK_DOWN])
+			posObs[2] -= 1;
+		if (teclado[SDLK_a]) {
+			posObs[0]+=1.f;
+			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		}
+		if(teclado[SDLK_s]) {
+			posObs[1]-=1.f;
+			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		}
+		if(teclado[SDLK_d]) {
+			posObs[0]-=1.f;
+			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		}
+		if(teclado[SDLK_w]) {
+			posObs[1]+=1.f;
+			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		}
+
 		glClearColor(0.3,0.4,0.3,0);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 

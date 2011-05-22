@@ -59,6 +59,16 @@ int main(int argc, char *argv[])
 			if (e.type == SDL_QUIT)
 				rodando = 0;
 		}
+/*
+		Uint8 *teclado = SDL_GetKeyState(0);
+
+		if (teclado[SDLK_LEFT])
+			posPonto[0] -= 1;
+		if (teclado[SDLK_RIGHT])
+			posPonto[0] += 1;
+		if (teclado[SDL_a])	
+*/
+
 		glClearColor(0.3,0.4,0.3,1);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
