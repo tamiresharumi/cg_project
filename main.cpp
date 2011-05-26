@@ -3,6 +3,53 @@
 #include <GL/glu.h>
 #include "modelo.h"
 
+#if 0
+struct Transformacao
+{
+	//angulo e direcao
+	float rotacao[4];
+	float posicao[3];
+};
+
+class Objeto
+{
+public:
+	Objeto(const char *nomeModelo)
+	{
+		modelo.carrega(nomeModelo);
+	}
+
+	void desenha()
+	{
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glTranslatef(posicao[0], posicao[1], posicao[2]);
+		glRotatef(rotacao[0], rotacao[1], rotacao[2], rotacao[4]);
+		glPopMatrix();
+	}
+
+	Transformacao transformacao;
+	Modelo modelo;
+};
+#endif
+
+void desenha_grid()
+{
+	glDisable(GL_LIGHTING);
+	glColor3f(1,1,1);
+	glBegin(GL_LINES);
+		for (int i=-10 ; i<10 ; ++i)
+		{
+			glVertex3f(i,0,-10);
+			glVertex3f(i,0,10);
+
+			glVertex3f(-10,0,i);
+			glVertex3f(10,0,i);
+		}
+	glEnd();
+	glEnable(GL_LIGHTING);
+}
+
 int main(int argc, char *argv[])
 {
 	int rodando = 1;
@@ -73,16 +120,18 @@ int main(int argc, char *argv[])
 		glClearColor(0.3,0.4,0.3,0);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+		//Na projection, sempre coloca só a gluPerspective
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		//faz a câmera ficar com perspectiva
 		gluPerspective(60, 1, 0.5, 100);
 
-
+		//Na modelview, as operações com matrizes tem que ser nessa ordem:
+		//	1. carregar identidade
+		//	2. usar a gluLookAt pra colocar a câmera no lugar certo
+		//	3. fazer as transformações do objeto
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glScalef(0.8,0.8,0.8);
-		glTranslatef(5, 0, 0);
 
 		gluLookAt(posObs[0], posObs[1], posObs[2],
                 0, 0, 0,
@@ -95,7 +144,7 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
 		modelo.desenha();
 		//modelo2.desenha();
-
+/*
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glScalef(0.8,0.8,0.8);
@@ -111,8 +160,27 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
 		modelo2.desenha();
+*/
+		desenha_grid();
+#if 0
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glScalef(0.8,0.8,0.8);
+		glTranslatef(-1, 0, 0);
+		gluLookAt(posObs[0], posObs[1], posObs[2],
+                0, 0, 0,
+				0, 1, 0);
 
+		glBegin(GL_QUADS);
+			glNormal3f(0,0,-1);
+			glVertex3f(5,  0, 5);
+			glVertex3f(5, 10, 5);
+			glVertex3f(6, 10, 5);
+			glVertex3f(6,  0, 5);
+		glEnd();
+#endif
 
 		SDL_GL_SwapBuffers();
+		SDL_Delay(10);
 	}
 }
