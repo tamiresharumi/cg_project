@@ -3,6 +3,7 @@
 #include <GL/glu.h>
 #include "modelo.h"
 #include <vector>
+#include <cmath>
 
 struct Transformacao
 {
@@ -65,6 +66,8 @@ int main(int argc, char *argv[])
 
 	float posObs[3] = {5, 3, 0};
 
+	float direcaoCamera[3] = {1,0,0};
+
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
@@ -96,29 +99,35 @@ int main(int argc, char *argv[])
 		Uint8 *teclado = SDL_GetKeyState(0);
 		
 		if (teclado[SDLK_LEFT])
-			angulo -= 1;
+			angulo -= .01;
 		if (teclado[SDLK_RIGHT])
-			angulo += 1;
-		if (teclado[SDLK_UP])
-			posObs[2] += 1;
-		if (teclado[SDLK_DOWN])
-			posObs[2] -= 1;
-		if (teclado[SDLK_a]) {
-			posObs[0]+=1.f;
-			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+			angulo += .01;
+
+		if (teclado[SDLK_a])
+		{
+			posObs[0] += 0.1*direcaoCamera[2];
+			posObs[2] -= 0.1*direcaoCamera[0];
 		}
-		if(teclado[SDLK_s]) {
-			posObs[1]-=1.f;
-			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		if (teclado[SDLK_s])
+		{
+			posObs[0] -= 0.1*direcaoCamera[0];
+			posObs[2] -= 0.1*direcaoCamera[2];
 		}
-		if(teclado[SDLK_d]) {
-			posObs[0]-=1.f;
-			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		if (teclado[SDLK_d])
+		{
+			posObs[0] -= 0.1*direcaoCamera[2];
+			posObs[2] += 0.1*direcaoCamera[0];
 		}
-		if(teclado[SDLK_w]) {
-			posObs[1]+=1.f;
-			//printf("posObs= {%f, %f, %f}\n", posObs[0], posObs[1], posObs[2]);
+		if (teclado[SDLK_w])
+		{
+			posObs[0] += 0.1*direcaoCamera[0];
+			posObs[2] += 0.1*direcaoCamera[2];
 		}
+
+		//atualiza a direção da camera
+		direcaoCamera[0] = cos(angulo);
+		direcaoCamera[1] = 0;
+		direcaoCamera[2] = sin(angulo);
 
 		glClearColor(0.3,0.4,0.3,0);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -161,9 +170,15 @@ int main(int argc, char *argv[])
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		gluLookAt(posObs[0], posObs[1], posObs[2],
-                0, 0, 0,
-				0, 1, 0);
+		float focoCamera[3] = {
+			posObs[0] + direcaoCamera[0],
+			posObs[1] + direcaoCamera[1],
+			posObs[2] + direcaoCamera[2]
+		};
+		gluLookAt(
+			posObs[0], posObs[1], posObs[2],
+			focoCamera[0], focoCamera[1], focoCamera[2],
+			0, 1, 0);
 
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
@@ -183,29 +198,11 @@ int main(int argc, char *argv[])
 			glPopMatrix();
 		}
 
-/*
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glScalef(0.8,0.8,0.8);
-		glTranslatef(-1, 0, 0);
-
-		gluLookAt(posObs[0], posObs[1], posObs[2],
-                0, 0, 0,
-				0, 1, 0);
-
-		//faz as coisas girarem
-		glRotatef(angulo,0,1,0);
-
-		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
-		modelo2.desenha();
-*/
 		desenha_grid();
 #if 0
+		//Isso seria pra desenhar uma parede, por exemplo.
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glScalef(0.8,0.8,0.8);
-		glTranslatef(-1, 0, 0);
 		gluLookAt(posObs[0], posObs[1], posObs[2],
                 0, 0, 0,
 				0, 1, 0);
