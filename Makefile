@@ -1,2 +1,2 @@
 all:
-	g++ main.cpp modelo.cpp -lSDL -lGLU -lGL
+	g++ main.cpp modelo.cpp -g3 -lSDL -lGLU -lGL

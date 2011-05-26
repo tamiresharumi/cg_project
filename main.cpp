@@ -2,36 +2,41 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "modelo.h"
+#include <vector>
 
-#if 0
 struct Transformacao
 {
+	Transformacao()
+	{ }
+	Transformacao(float rot, float x, float y, float z)
+	{
+		rotacao = rot;
+		posicao[0] = x;
+		posicao[1] = y;
+		posicao[2] = z;
+	}
 	//angulo e direcao
-	float rotacao[4];
+	float rotacao;
 	float posicao[3];
 };
 
 class Objeto
 {
 public:
-	Objeto(const char *nomeModelo)
+	Objeto(const char *nomeModelo, Transformacao trans)
 	{
 		modelo.carrega(nomeModelo);
+		transformacao = trans;
 	}
 
 	void desenha()
 	{
 		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glTranslatef(posicao[0], posicao[1], posicao[2]);
-		glRotatef(rotacao[0], rotacao[1], rotacao[2], rotacao[4]);
-		glPopMatrix();
 	}
 
 	Transformacao transformacao;
 	Modelo modelo;
 };
-#endif
 
 void desenha_grid()
 {
@@ -70,11 +75,9 @@ int main(int argc, char *argv[])
 	glEnable(GL_LIGHT0);
 	glEnable(GL_NORMALIZE);
 
-	Modelo modelo;
-	Modelo modelo2;
-
-	modelo.carrega("t_sofa3.obj");
-    modelo2.carrega("t_table.obj");
+	std::vector<Objeto*> objetos;
+	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0)));
+	objetos.push_back(new Objeto("t_table.obj", Transformacao(0, 5, 0, 0)));
 
 	//loop pra manter o programa aberto
 	while (rodando)
@@ -130,6 +133,31 @@ int main(int argc, char *argv[])
 		//	1. carregar identidade
 		//	2. usar a gluLookAt pra colocar a câmera no lugar certo
 		//	3. fazer as transformações do objeto
+		//
+		//Tem uma função que chama glPushMatrix, que serve pra copiar a matriz
+		//modelview pra poder restaurá-la depois. Dá pra salvar, fazer um monte
+		//de operações nela, e depois que for usada essa cópia, pode restaurar a
+		//versão anterior. Isso deixa a gente fazer o seguinte:
+		//
+		//	//define a posição da camera
+		//	glLoadIdentity();
+		//	gluLookAt(...);
+		//
+		//	//define a posicao do objeto 1
+		//	glPushMatrix();
+		//		glTranslate(...); //(1)
+		//		glRotate(...);  //(2)
+		//		objeto1.desenha();
+		//	glPopMatrix();
+		//
+		//	//define a posicao do objeto 2. O legal aqui é que, por causa do
+		//	//gl{Push/Pop}Matrix, as operações marcadas com (1) e (2) não afetam
+		//	//o desenhar desse segundo objeto!
+		//	glPushMatrix();
+		//		glTranslate(...);
+		//		glRotate(...);
+		//		objeto2.desenha();
+		//	glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
@@ -137,13 +165,24 @@ int main(int argc, char *argv[])
                 0, 0, 0,
 				0, 1, 0);
 
-		//faz as coisas girarem
-		glRotatef(angulo,0,1,0);
-
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
-		modelo.desenha();
-		//modelo2.desenha();
+
+		//desenha todos os objetos
+		for (int i=0 ; i<objetos.size() ; ++i)
+		{
+			float *posicao = objetos[i]->transformacao.posicao;
+			float rotacao = objetos[i]->transformacao.rotacao;
+
+			//salva a matriz pra poder fazer as operações de matriz sem afetar
+			//outros objetos
+			glPushMatrix();
+				glTranslatef(posicao[0], posicao[1], posicao[2]);
+				glRotatef(rotacao, 0, 1, 0);
+				objetos[i]->modelo.desenha();
+			glPopMatrix();
+		}
+
 /*
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
