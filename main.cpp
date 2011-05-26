@@ -4,6 +4,7 @@
 #include "modelo.h"
 #include <vector>
 #include <cmath>
+#include <SOIL/SOIL.h>
 
 struct Transformacao
 {
@@ -42,6 +43,7 @@ public:
 void desenha_grid()
 {
 	glDisable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 	glColor3f(1,1,1);
 	glBegin(GL_LINES);
 		for (int i=-10 ; i<10 ; ++i)
@@ -54,6 +56,7 @@ void desenha_grid()
 		}
 	glEnd();
 	glEnable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
 }
 
 int main(int argc, char *argv[])
@@ -77,11 +80,15 @@ int main(int argc, char *argv[])
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_NORMALIZE);
+	glEnable(GL_TEXTURE_2D);
 
 	std::vector<Objeto*> objetos;
 	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0)));
 	objetos.push_back(new Objeto("t_table.obj", Transformacao(0, 5, 0, 0)));
 
+	unsigned texId = SOIL_load_OGL_texture("leather.jpg",
+		SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+	
 	//loop pra manter o programa aberto
 	while (rodando)
 	{
@@ -182,6 +189,8 @@ int main(int argc, char *argv[])
 
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
+
+		glBindTexture(GL_TEXTURE_2D, texId);
 
 		//desenha todos os objetos
 		for (int i=0 ; i<objetos.size() ; ++i)
