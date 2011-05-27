@@ -25,19 +25,44 @@ struct Transformacao
 class Objeto
 {
 public:
-	Objeto(const char *nomeModelo, Transformacao trans)
+	Objeto(const char *nomeModelo, Transformacao trans, const char *tex=0)
 	{
 		modelo.carrega(nomeModelo);
 		transformacao = trans;
+		textura = 0;
+
+		if (tex)
+		{
+			textura = SOIL_load_OGL_texture(tex, SOIL_LOAD_AUTO,
+			SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
+		}
 	}
 
 	void desenha()
 	{
-		glMatrixMode(GL_MODELVIEW);
+		float *posicao = transformacao.posicao;
+		float rotacao = transformacao.rotacao;
+
+		if (!textura)
+			glDisable(GL_TEXTURE_2D);
+		else
+			glBindTexture(GL_TEXTURE_2D, textura);
+
+		//salva a matriz pra poder fazer as operações de matriz sem afetar
+		//outros objetos
+		glPushMatrix();
+			glTranslatef(posicao[0], posicao[1], posicao[2]);
+			glRotatef(rotacao, 0, 1, 0);
+			modelo.desenha();
+		glPopMatrix();
+
+		if (!textura)
+			glEnable(GL_TEXTURE_2D);
 	}
 
 	Transformacao transformacao;
 	Modelo modelo;
+	unsigned textura;
 };
 
 void desenha_grid()
@@ -83,11 +108,9 @@ int main(int argc, char *argv[])
 	glEnable(GL_TEXTURE_2D);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0)));
+	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0), "leather.jpg"));
 	objetos.push_back(new Objeto("t_table.obj", Transformacao(0, 5, 0, 0)));
 
-	unsigned texId = SOIL_load_OGL_texture("leather.jpg",
-		SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	
 	//loop pra manter o programa aberto
 	while (rodando)
@@ -190,22 +213,9 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
 
-		glBindTexture(GL_TEXTURE_2D, texId);
-
 		//desenha todos os objetos
 		for (int i=0 ; i<objetos.size() ; ++i)
-		{
-			float *posicao = objetos[i]->transformacao.posicao;
-			float rotacao = objetos[i]->transformacao.rotacao;
-
-			//salva a matriz pra poder fazer as operações de matriz sem afetar
-			//outros objetos
-			glPushMatrix();
-				glTranslatef(posicao[0], posicao[1], posicao[2]);
-				glRotatef(rotacao, 0, 1, 0);
-				objetos[i]->modelo.desenha();
-			glPopMatrix();
-		}
+			objetos[i]->desenha();
 
 		desenha_grid();
 #if 0
@@ -229,3 +239,4 @@ int main(int argc, char *argv[])
 		SDL_Delay(10);
 	}
 }
+
