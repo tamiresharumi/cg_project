@@ -1,4 +1,4 @@
-OBJS = modelo.o main.o \
+OBJS = modelo.o main.o objeto.o \
 	SOIL/SOIL.o SOIL/image_DXT.o SOIL/image_helper.o SOIL/stb_image_aug.o
 
 SOIL/%.o: SOIL/%.c
