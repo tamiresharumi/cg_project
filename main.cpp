@@ -7,14 +7,6 @@
 #include <SOIL/SOIL.h>
 #include "objeto.h"
 
-void desenha_chao()
-{
-
-        glBegin(GL_QUADS);
-
-}
-
-
 void desenha_grid()
 {
 	glDisable(GL_LIGHTING);
