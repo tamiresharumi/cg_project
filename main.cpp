@@ -65,6 +65,14 @@ public:
 	unsigned textura;
 };
 
+void desenha_chao()
+{
+
+        glBegin(GL_QUADS);
+
+}
+
+
 void desenha_grid()
 {
 	glDisable(GL_LIGHTING);
@@ -89,7 +97,7 @@ int main(int argc, char *argv[])
 	int rodando = 1;
 	float angulo = 90.00f;
 	float posPonto[3] = {0, 0, 0};
-	float posLuz[4] = {0,0,2,0};
+	float posLuz[4] = {-2,2,2,0};
 	float corLuz[4] = {1,1,1,1};
 
 	float posObs[3] = {5, 3, 0};
@@ -110,8 +118,9 @@ int main(int argc, char *argv[])
 	std::vector<Objeto*> objetos;
 	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0), "leather.jpg"));
 	objetos.push_back(new Objeto("t_table.obj", Transformacao(0, 5, 0, 0)));
+	objetos.push_back(new Objeto("floor.obj", Transformacao(0, 0, 0, 0),  "Limestone_Floor.jpg"));
 
-	
+
 	//loop pra manter o programa aberto
 	while (rodando)
 	{
@@ -127,7 +136,7 @@ int main(int argc, char *argv[])
 		}
 
 		Uint8 *teclado = SDL_GetKeyState(0);
-		
+
 		if (teclado[SDLK_LEFT])
 			angulo -= .01;
 		if (teclado[SDLK_RIGHT])
