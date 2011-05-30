@@ -28,9 +28,9 @@ void desenha_grid()
 
 int main(int argc, char *argv[])
 {
-	//Limits limit;
+	Limits limit;
 	int rodando = 1;
-	float angulo = 0.00f;
+	float angulo = 90.00f;
 	float posPonto[3] = {0, 0, 0};
 	float posLuz[4] = {-2,12,2,0};
 	float corLuz[4] = {1,1,1,1};
@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
 	glEnable(GL_TEXTURE_2D);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
-	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
+//	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+//	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
 //	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
-//	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0)));
-//	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
+	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0)));
+	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
 
 	//loop pra manter o programa aberto
 	while (rodando)
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 		for (int i=0 ; i<objetos.size() ; ++i)
 			objetos[i]->desenha();
 
-		//desenha_grid();
+		desenha_grid();
 #if 0
 		//Isso seria pra desenhar uma parede, por exemplo.
 		glMatrixMode(GL_MODELVIEW);

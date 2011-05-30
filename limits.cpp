@@ -18,7 +18,7 @@ int Limits::readFile(const char *filename)
     FILE* f = fopen(filename, "r+");
 
     if(!f) printf("Arquivo nao foi aberto!\n");
-
+    printf("xD\n\n");
     char linha[255];
     while (!feof(f))
 	{
@@ -42,8 +42,11 @@ int Limits::readFile(const char *filename)
 int Limits::getFloor(float y, const char* arq){
 
     float i, j;
-    float px = (C/inc)+1;
-    float pz = (L/inc)+1;
+    float px = (L/inc)+1;
+    float pz = (C/inc)+1;
+#if TESTE
+    printf("px|%f\npz|%f\n\n", px, pz);
+#endif
 
     if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
@@ -64,9 +67,7 @@ int Limits::getFloor(float y, const char* arq){
         fprintf(f, "vn 0 -1 0\n");
     else
         fprintf(f, "vn 0 1 0\n");
-#if TESTE
-    printf("px|%f\npz|%f\n\n", px, pz);
-#endif
+
     for(i=0;i<(pz-1);i++){
         for(j=0;j<(px-1);j++){
             fprintf(f, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
