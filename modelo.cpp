@@ -22,6 +22,7 @@ int Modelo::carrega(const char *arquivo)
 	FILE *arq = fopen(arquivo, "r");
 	if (!arq)
 	{
+	    printf("Nao abre o arquivo %s\n", arquivo);
 	    perror("Falha em " __FILE__ "");
 		return 0;
 	}
@@ -47,7 +48,7 @@ int Modelo::carrega(const char *arquivo)
 	if (!nVerts || !nNorms || !nTex || !nFaces)
 	{
 		fclose(arq);
-		printf("FUDEU! O arquivo obj não está correto!");
+		printf("FUDEU! O arquivo obj non esta correto!");
 		return 0;
 	}
 

@@ -6,7 +6,7 @@
 #include <cmath>
 #include <SOIL/SOIL.h>
 #include "objeto.h"
-
+#include "limits.h"
 void desenha_grid()
 {
 	glDisable(GL_LIGHTING);
@@ -28,11 +28,13 @@ void desenha_grid()
 
 int main(int argc, char *argv[])
 {
+	//Limits limit;
 	int rodando = 1;
-	float angulo = 90.00f;
+	float angulo = 0.00f;
 	float posPonto[3] = {0, 0, 0};
-	float posLuz[4] = {-2,2,2,0};
+	float posLuz[4] = {-2,12,2,0};
 	float corLuz[4] = {1,1,1,1};
+	float corLuz1[4] = {0.9,0.9,0.9,0};
 
 	float posObs[3] = {5, 3, 0};
 
@@ -46,17 +48,20 @@ int main(int argc, char *argv[])
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_TEXTURE_2D);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("t_sofa3.obj", Transformacao(0, 0, 0, 0), "leather.jpg"));
-	objetos.push_back(new Objeto("t_table.obj", Transformacao(0, 5, 0, 0)));
-	objetos.push_back(new Objeto("floor.obj", Transformacao(0, 0, 0, 0),  "Limestone_Floor.jpg"));
-
+	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
+//	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+//	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0)));
+//	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
 
 	//loop pra manter o programa aberto
 	while (rodando)
+
 	{
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
@@ -155,12 +160,16 @@ int main(int argc, char *argv[])
 
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
+        glDisable(GL_LIGHT0);
+
+        glLightfv(GL_LIGHT1, GL_POSITION, posLuz);
+		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
 
 		//desenha todos os objetos
 		for (int i=0 ; i<objetos.size() ; ++i)
 			objetos[i]->desenha();
 
-		desenha_grid();
+		//desenha_grid();
 #if 0
 		//Isso seria pra desenhar uma parede, por exemplo.
 		glMatrixMode(GL_MODELVIEW);
