@@ -53,6 +53,7 @@ int Limits::getFloor(float y, const char* arq){
         return 0;
     }
     FILE* f = fopen(arq, "w+");
+    FILE* x = fopen("log_for.log", "w+");
     for(i=-(L/2.); i<=(L/2.); i+=inc){
         for(j=-(C/2.); j<=(C/2.); j+=inc){
             fprintf(f, "v %5.2f %5.2f %5.2f\n", j, y, i);
@@ -70,22 +71,25 @@ int Limits::getFloor(float y, const char* arq){
 
 //faces do quadrado de cima
 #if TESTE
-    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-1), (px-1));
+    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-2), (px-2));
 #endif
 
     for(i=0;i<(pz-1);i++){
         for(j=0;j<(px-1);j++){
             fprintf(f, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
-                    (i*pz)+(j+1), ((i+1)*pz + (j+1)), (i*pz)+(j+2));
+                    (i*px)+(j+1), ((i+1)*px + (j+1)), (i*px)+(j+2));
+            fprintf(x, "i=%.1f  j=%.1f  v=%.1f %.1f %.1f\n", i, j,
+                    (i*px)+(j+1), ((i+1)*px + (j+1)), (i*px)+(j+2));
         }
     }
-    for(i=0;i<(pz-1);i++){
-        for(j=1;j<px;j++){
-            fprintf(f, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
-                      (i*pz)+(j+1), ((i+1)*pz + j), ((i+1)*pz)+(j+1));
-        }
-    }
+//    for(i=0;i<(pz-1);i++){
+//        for(j=1;j<px;j++){
+//            fprintf(f, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
+//                      (i*px)+(j+1), ((i+1)*px + j), ((i+1)*px)+(j+1));
+//        }
+//    }
     fclose(f);
+    fclose(x);
     return 1;
 }
 

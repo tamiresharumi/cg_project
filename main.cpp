@@ -54,9 +54,9 @@ int main(int argc, char *argv[])
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
-	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
-	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+//	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+//	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
+//	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
 	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0)));
 	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
 
