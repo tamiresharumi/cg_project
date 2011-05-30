@@ -68,6 +68,11 @@ int Limits::getFloor(float y, const char* arq){
     else
         fprintf(f, "vn 0 1 0\n");
 
+//faces do quadrado de cima
+#if TESTE
+    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-1), (px-1));
+#endif
+
     for(i=0;i<(pz-1);i++){
         for(j=0;j<(px-1);j++){
             fprintf(f, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
@@ -83,3 +88,34 @@ int Limits::getFloor(float y, const char* arq){
     fclose(f);
     return 1;
 }
+
+//int Limits::getWall(bool xz, float v, const char* arq){
+//
+//    float i, j;
+//    if(xz){  //fixamos z; paredes
+//        float px = (L/inc)+1;
+//        float x;
+//    }
+//    else
+//        float pz = (C/inc)+1;
+//    float py = (T/inc)+1;
+//
+//#if TESTE
+//    printf("px|%f\npz|%f\n\n", px, pz);
+//#endif
+//
+//    if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
+//        printf("Incremento incompativel!\n");
+//        return 0;
+//    }
+//    FILE* f = fopen(arq, "w+");
+//    for(i=-(L/2.); i<=(L/2.); i+=inc){
+//        for(j=-(C/2.); j<=(C/2.); j+=inc){
+//            fprintf(f, "v %5.2f %5.2f %5.2f\n", j, y, i);
+//        }
+//    }
+//    fprintf(f, "vt 0 0\n");
+//    fprintf(f, "vt 0 1\n");
+//    fprintf(f, "vt 1 0\n");
+//    fprintf(f, "vt 1 1\n");
+//}
