@@ -7,6 +7,8 @@
 #include <SOIL/SOIL.h>
 #include "objeto.h"
 #include "limits.h"
+#include <cstdio>
+
 void desenha_grid()
 {
 	glDisable(GL_LIGHTING);
@@ -26,6 +28,58 @@ void desenha_grid()
 	glEnable(GL_TEXTURE_2D);
 }
 
+void desenha_skybox(unsigned skyboxTex, float meioLado)
+{
+	float vertices[][3] =
+	{
+		{-meioLado, -meioLado, -meioLado}, //0 TRAS BAIXO ESQ
+		{-meioLado, -meioLado, +meioLado}, //1 FRENTE BAIXO ESQ
+		{-meioLado, +meioLado, -meioLado}, //2 TRAS CIMA ESQ
+		{-meioLado, +meioLado, +meioLado}, //3 FRENTE CIMA ESQ
+		{+meioLado, -meioLado, -meioLado}, //4 TRAS BAIXO DIR
+		{+meioLado, -meioLado, +meioLado}, //5 FRENTE BAIXO DIR
+		{+meioLado, +meioLado, -meioLado}, //6 TRAS CIMA DIR
+		{+meioLado, +meioLado, +meioLado}  //7 FRENTE CIMA DIR
+	};
+
+	float texturas[][3] =
+	{
+		{-1, -1, -1},
+		{-1, -1, +1},
+		{-1, +1, -1},
+		{-1, +1, +1},
+		{+1, -1, -1},
+		{+1, -1, +1},
+		{+1, +1, -1},
+		{+1, +1, +1},
+	};
+
+	short indices[][4] =
+	{
+		{0, 2, 3, 1},
+		{4, 6, 7, 5},
+		{0, 1, 5, 4},
+		{2, 3, 7, 6},
+		{0, 4, 6, 2},
+		{1, 5, 7, 3}
+	};
+
+	glDisable(GL_LIGHTING);
+	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
+	for (int i=0 ; i<6 ; ++i)
+	{
+		for (int j=0 ; j<4 ; ++j)
+		{
+			//Agora seta a coordenada de textura antes do vértice
+			glTexCoord3fv(texturas[indices[i][j]]);
+			glVertex3fv(vertices[indices[i][j]]);
+		}
+	}
+	glEnd();
+	glEnable(GL_LIGHTING);
+}
+
 int main(int argc, char *argv[])
 {
 	Limits limit;
@@ -39,7 +93,7 @@ int main(int argc, char *argv[])
 	float posObs[3] = {5, 3, 0};
 
 	float direcaoCamera[3] = {1,0,0};
-
+	
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
@@ -51,8 +105,22 @@ int main(int argc, char *argv[])
 	glEnable(GL_LIGHT1);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_TEXTURE_2D);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_TEXTURE_CUBE_MAP);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	//textura do skybox, criada a partir das seis imagens
+	unsigned texturaSkybox = SOIL_load_OGL_cubemap(
+		"skybox/direita.jpg",
+		"skybox/esquerda.jpg",
+		"skybox/cima.jpg",
+		"skybox/baixo.jpg",
+		"skybox/frente.jpg",
+		"skybox/tras.jpg",
+		SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS
+	);
+	
 	std::vector<Objeto*> objetos;
 //	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
 //	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
@@ -169,6 +237,9 @@ int main(int argc, char *argv[])
 		//desenha todos os objetos
 		for (int i=0 ; i<objetos.size() ; ++i)
 			objetos[i]->desenha();
+
+		//desenha nosso querido e super legal skybox!
+		desenha_skybox(texturaSkybox, 50.0f);
 
 //		desenha_grid();
 #if 0
