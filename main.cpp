@@ -89,13 +89,13 @@ int main(int argc, char *argv[])
 {
 	Limits limit;
 	int rodando = 1;
-	float angulo = 90.00f;
+	float angulo = 30.00f;
 	float posPonto[3] = {0, 0, 0};
-	float posLuz[4] = {-2,limit.getT(),2,0};
+	float posLuz[4] = {-2,limit.getT()/2,2,0};
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.9,0};
 
-	float posObs[3] = {5, 3, 0};
+	float posObs[3] = {0, (limit.getT()/2), 0};
 
 	float direcaoCamera[3] = {1,0,0};
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_TEXTURE_2D);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//textura do skybox, criada a partir das seis imagens
 	unsigned texturaSkybox = SOIL_load_OGL_cubemap(
@@ -127,13 +127,15 @@ int main(int argc, char *argv[])
 	);
 
 	std::vector<Objeto*> objetos;
-//	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
-//	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
-	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
-	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));
-	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
-    objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));
-    objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));
+	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
+	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+    objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
+    objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
+    objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+    objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+    objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+    objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
 	//loop pra manter o programa aberto
 	while (rodando)
 
