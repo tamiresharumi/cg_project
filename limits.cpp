@@ -52,15 +52,15 @@ int Limits::getFloor(float y, const char* arq){
     float pz = (C/inc)+1;
 
 
-    printf("px|%f\npz|%f\n\n", px, pz);
+//    printf("px|%f\npz|%f\n\n", px, pz);
     if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
         return 0;
     }
     FILE* f = fopen(arq, "w+");
     FILE* x = fopen("log_for.log", "w+");
-    for(i=-(C/2.); i<=(C/2.); i+=inc){
-        for(j=-(L/2.); j<=(L/2.); j+=inc){
+    for(i=-(L/2.); i<=(L/2.); i+=inc){
+        for(j=-(C/2.); j<=(C/2.); j+=inc){
             fprintf(f, "v %5.2f %5.2f %5.2f\n", i, y, j);
         }
     }
@@ -75,22 +75,22 @@ int Limits::getFloor(float y, const char* arq){
         fprintf(f, "vn 0 1 0\n");
 
 //faces do quadrado de cima
-#if TESTE
-    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-2), (px-2));
-#endif
+//#if TESTE
+//    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-2), (px-2));
+//#endif
 
-    for(i=0;i<(pz-1);i++){
-        for(j=0;j<(px-1);j++){
+    for(i=0;i<(px-1);i++){
+        for(j=0;j<(pz-1);j++){
             fprintf(f, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
-                    (i*px)+(j+1), ((i+1)*px + (j+1)), (i*px)+(j+2));
+                    (i*pz)+(j+1), ((i+1)*pz + (j+1)), (i*pz)+(j+2));
             fprintf(x, "i=%.1f  j=%.1f  v=%.1f %.1f %.1f\n", i, j,
-                    (i*px)+(j+1), ((i+1)*px + (j+1)), (i*px)+(j+2));
+                    (i*pz)+(j+1), ((i+1)*pz + (j+1)), (i*pz)+(j+2));
         }
     }
-    for(i=0;i<(pz-1);i++){
-        for(j=1;j<px;j++){
+    for(i=0;i<(px-1);i++){
+        for(j=1;j<pz;j++){
             fprintf(f, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
-                      (i*px)+(j+1), ((i+1)*px + j), ((i+1)*px)+(j+1));
+                      (i*pz)+(j+1), ((i+1)*pz + j), ((i+1)*pz)+(j+1));
         }
     }
     fclose(f);
@@ -129,8 +129,8 @@ int Limits::getWallX(FILE* right, FILE *left){
     }
     for(i=T; i>=0; i-=inc){
         for(j=-(C/2.); j<=(C/2.); j+=inc){
-            fprintf(left, "v %5.2f %5.2f %5.2f\n", -(C/2.), i, j);
-            fprintf(right, "v %5.2f %5.2f %5.2f\n", C/2., i, j);
+            fprintf(left, "v %5.2f %5.2f %5.2f\n", -(L/2.), i, j);
+            fprintf(right, "v %5.2f %5.2f %5.2f\n", L/2., i, j);
         }
     }
     fprintf(right, "vt 0 0\n");
@@ -153,4 +153,14 @@ int Limits::getWallX(FILE* right, FILE *left){
                     (pz*i)+(j+1), (i+1)*pz + j + 1, (i*pz) + (j+2));
         }
     }
+
+        for(i=0;i<py-1;i++){
+            for(j=1;j<pz;j++){
+                fprintf(left, "f %.0f/2/1 %.0f/1/1 %.0f/3/1\n",
+                        (pz*i)+(j+1), (i+1)*pz +(j+1), (i+1)*pz + j);
+                fprintf(right, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
+                        (pz*i)+(j+1), (i+1)*pz + j, (i+1)*pz + j+1);
+        }
+    }
+
 }
