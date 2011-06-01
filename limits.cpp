@@ -17,6 +17,14 @@ float Limits::getT(void){
     return T;
 }
 
+float Limits::getC(void){
+    return C;
+}
+
+float Limits::getL(void){
+    return L;
+}
+
 int Limits::readFile(const char *filename)
 {
     FILE* f = fopen(filename, "r+");
@@ -38,9 +46,10 @@ int Limits::readFile(const char *filename)
 	}
 	fclose(f);
     printf("T|%d\nC|%d\nL|%d\n\n", T, C, L);
-    getFloor(0, "p0.obj");
+    getFloor(0, "p1.obj");
     getFloor(T, "p6.obj");
-    getWall(0,"p3.obj", "p4.obj");
+    getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
+    getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
 }
 
 
@@ -74,11 +83,6 @@ int Limits::getFloor(float y, const char* arq){
     else
         fprintf(f, "vn 0 1 0\n");
 
-//faces do quadrado de cima
-//#if TESTE
-//    printf("= Teste =\nNo quadrado de cima:\ni vai de 0 a %.0f\nj vai de 0 a %.0f\n\n", (pz-2), (px-2));
-//#endif
-
     for(i=0;i<(px-1);i++){
         for(j=0;j<(pz-1);j++){
             fprintf(f, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
@@ -108,7 +112,7 @@ int Limits::getWall(bool xz, const char* arqr, const char *arql){
     if(!xz){
         getWallX(a, b);
     }
-    //else getWallZ(v, a);
+    else getWallZ(a, b);
     fclose(a);
     fclose(b);
 }
@@ -162,5 +166,53 @@ int Limits::getWallX(FILE* right, FILE *left){
                         (pz*i)+(j+1), (i+1)*pz + j, (i+1)*pz + j+1);
         }
     }
+}
 
+
+int Limits::getWallZ(FILE* front, FILE *behind){
+
+    float i, j;
+    float px = (L/inc)+1;
+    float py = (T/inc)+1;
+
+
+    if((fmod(T, inc) != 0)||(fmod(L, inc) != 0)){
+        printf("Incremento incompativel!\n");
+        return 0;
+    }
+
+    for(i=T; i>=0; i-=inc){
+        for(j=-(L/2.); j<=(L/2.); j+=inc){
+            fprintf(front, "v %5.2f %5.2f %5.2f\n", j, i, -(C/2.));
+            fprintf(behind, "v %5.2f %5.2f %5.2f\n", j, i, C/2.);
+        }
+    }
+    fprintf(front, "vt 0 0\n");
+    fprintf(front, "vt 0 1\n");
+    fprintf(front, "vt 1 0\n");
+    fprintf(front, "vt 1 1\n");
+    fprintf(behind, "vt 0 0\n");
+    fprintf(behind, "vt 0 1\n");
+    fprintf(behind, "vt 1 0\n");
+    fprintf(behind, "vt 1 1\n");
+
+    fprintf(front, "vn 0 0 1\n");
+    fprintf(behind, "vn 0 0 -1\n");
+
+    for(i=0;i<py-1;i++){
+        for(j=0;j<px-1;j++){
+            fprintf(front, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
+                    (px*i)+(j+1), (i+1)*px + (j+1), (i*px) + (j+2));
+            fprintf(behind, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
+                    (px*i)+(j+1), (i+1)*px + j + 1, (i*px) + (j+2));
+        }
+    }
+    for(i=0;i<py-1;i++){
+        for(j=1;j<px;j++){
+            fprintf(front, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
+                   (px*i)+(j+1), (i+1)*px +j, (i+1)*px + (j+1));
+            fprintf(behind, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
+                   (px*i)+(j+1), (i+1)*px + j, (i+1)*px + j+1);
+        }
+    }
 }

@@ -8,11 +8,15 @@ class Limits
         Limits();
         void setInc(float nInc);
         float getT(void);
+        float getC(void);
+        float getL(void);
+
     private:
         int readFile(const char *filename);
         int getFloor(float y, const char* arq);
         int getWall(bool xz, const char* arqr, const char *arql);
         int getWallX(FILE *right, FILE *left);
+        int getWallZ(FILE *front, FILE *behind);
         float inc;
         int C ,L, T;
         /**
