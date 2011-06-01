@@ -66,8 +66,9 @@ void desenha_skybox(unsigned skyboxTex, float meioLado)
 	};
 
 	glDisable(GL_LIGHTING);
-	glBegin(GL_QUADS);
+	glEnable(GL_TEXTURE_CUBE_MAP);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
+	glBegin(GL_QUADS);
 	for (int i=0 ; i<6 ; ++i)
 	{
 		for (int j=0 ; j<4 ; ++j)
@@ -78,6 +79,7 @@ void desenha_skybox(unsigned skyboxTex, float meioLado)
 		}
 	}
 	glEnd();
+	glDisable(GL_TEXTURE_CUBE_MAP);
 	glEnable(GL_LIGHTING);
 }
 
@@ -107,7 +109,6 @@ int main(int argc, char *argv[])
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_TEXTURE_CUBE_MAP);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//textura do skybox, criada a partir das seis imagens
@@ -126,7 +127,7 @@ int main(int argc, char *argv[])
 	std::vector<Objeto*> objetos;
 	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
 	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
-	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
 	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));
 	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));
     objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));

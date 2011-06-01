@@ -1,3 +1,6 @@
 a.out
 *.o
 SOIL/*.o
+*.log
+nadaver/*
+*.swp
