@@ -94,9 +94,9 @@ int main(int argc, char *argv[])
 	float posLuz[4] = {-2,limit.getT(),2,0};
 	float posLuz1[4] = {0, limit.getT()/2, 0, 1};
 	float corLuz[4] = {1,1,1,1};
-	float corLuz1[4] = {0.9,0.9,0.9,0};
+	float corLuz1[4] = {0.9,0.9,0.6,0};
 
-	float posObs[3] = {5, 3, 0};
+	float posObs[3] = {5, 1, 0};
 
 	float direcaoCamera[3] = {1,0,0};
 
@@ -116,19 +116,19 @@ int main(int argc, char *argv[])
 
 	//textura do skybox, criada a partir das seis imagens
 	unsigned texturaSkybox = SOIL_load_OGL_cubemap(
-		"skybox/direita.jpg",
 		"skybox/esquerda.jpg",
+		"skybox/direita.jpg",
 		"skybox/cima.jpg",
 		"skybox/baixo.jpg",
-		"skybox/frente.jpg",
 		"skybox/tras.jpg",
+		"skybox/frente.jpg",
 		SOIL_LOAD_AUTO,
 		SOIL_CREATE_NEW_ID,
 		SOIL_FLAG_MIPMAPS
 	);
 
 	std::vector<Objeto*> objetos;
-//	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
 //	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
 	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
 	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		//faz a câmera ficar com perspectiva
-		gluPerspective(60, 1, 0.5, 100);
+		gluPerspective(60, 1, 0.5, 100*1.4142);
 
 		//Na modelview, as operações com matrizes tem que ser nessa ordem:
 		//	1. carregar identidade

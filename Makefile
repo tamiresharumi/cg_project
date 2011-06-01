@@ -1,3 +1,5 @@
+EXE = a.out
+
 OBJS = modelo.o main.o objeto.o limits.o \
 	SOIL/SOIL.o SOIL/image_DXT.o SOIL/image_helper.o SOIL/stb_image_aug.o
 
@@ -7,5 +9,7 @@ SOIL/%.o: SOIL/%.c
 %.o: %.cpp
 	g++ -I. -c -g3 $<
 
-all: $(OBJS)
+all: $(EXE)
+
+$(EXE): $(OBJS)
 	g++ *.o SOIL/*.o -g3 -lSDL -lGLU -lGL
