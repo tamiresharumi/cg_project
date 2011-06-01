@@ -83,6 +83,8 @@ void desenha_skybox(unsigned skyboxTex, float meioLado)
 	glEnable(GL_LIGHTING);
 }
 
+
+
 int main(int argc, char *argv[])
 {
 	Limits limit;
@@ -125,8 +127,8 @@ int main(int argc, char *argv[])
 	);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
-	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
+//	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+//	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
 	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
 	objetos.push_back(new Objeto("p0.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));
 	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));

@@ -16,9 +16,9 @@ class Limits
         float inc;
         int C ,L, T;
         /**
-        C de comprimento
-        L de largura
-        T de teto
+        C de comprimento - tamanho em z
+        L de largura - tamanho em x
+        T de teto - tamanho em y
         */
 };
 
