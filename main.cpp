@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
 	float angulo = 90.00f;
 	float posPonto[3] = {0, 0, 0};
 	float posLuz[4] = {-2,limit.getT(),2,0};
+	float posLuz1[4] = {0, limit.getT()/2, 0, 1};
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.9,0};
 
@@ -235,7 +236,7 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
         glDisable(GL_LIGHT0);
 
-        glLightfv(GL_LIGHT1, GL_POSITION, posLuz);
+        glLightfv(GL_LIGHT1, GL_POSITION, posLuz1);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
 
 		//desenha todos os objetos
