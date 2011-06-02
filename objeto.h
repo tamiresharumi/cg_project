@@ -19,16 +19,25 @@ struct Transformacao
 	float posicao[3];
 };
 
+struct AABB
+{
+	float min[3];
+	float max[3];
+}:
+
 class Objeto
 {
 public:
 	Objeto(const char *nomeModelo, Transformacao trans, const char *tex=0);
+
+	void calculaAABB();
 
 	void desenha();
 
 	Transformacao transformacao;
 	Modelo modelo;
 	unsigned textura;
+	AABB aabb;
 };
 
 #endif

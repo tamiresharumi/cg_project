@@ -53,6 +53,7 @@ int Modelo::carrega(const char *arquivo)
 	}
 
 	this->numFaces = nFaces;
+	this->numVerts = nVerts;
 
 	//agora aloca os buffers que precisa pra salvar tudo. É bem pesada essa
 	//parte e provavelmente gera uma fragmentação de memória absurda, mas
