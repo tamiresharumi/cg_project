@@ -2,6 +2,7 @@
 #define OBJETO_H
 
 #include "modelo.h"
+#include <string>
 
 struct Transformacao
 {
@@ -19,16 +20,28 @@ struct Transformacao
 	float posicao[3];
 };
 
+struct AABB
+{
+	float min[3];
+	float max[3];
+};
+
 class Objeto
 {
 public:
 	Objeto(const char *nomeModelo, Transformacao trans, const char *tex=0);
 
+	void calculaAABB();
+	void desenhaAABB();
 	void desenha();
+
+	bool testaColisao(float posicao[3], float raio, float normal[3]);
 
 	Transformacao transformacao;
 	Modelo modelo;
 	unsigned textura;
+	AABB aabb;
+	std::string nome_modelo;
 };
 
 #endif

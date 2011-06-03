@@ -34,7 +34,7 @@ int Limits::readFile(const char *filename)
     L = 0;
 
     if(!f) printf("Arquivo nao foi aberto!\n");
-    printf("xD\n\n");
+    printf("A Harumi é fofinha! xD\n\n");
     char linha[255];
     while (!feof(f))
 	{

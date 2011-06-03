@@ -9,6 +9,7 @@ class Modelo
 		float *tex;
 		int *faces;
 		int numFaces;
+		int numVerts;
 
 		int carrega(const char *arquivo);
         ~Modelo();

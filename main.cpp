@@ -5,10 +5,10 @@
 #include <vector>
 #include <cmath>
 #include <SOIL/SOIL.h>
-#include "objeto.h"
 #include "limits.h"
 #include <cstdio>
-
+#include <iostream>
+#include "objeto.h"
 
 void desenha_grid()
 {
@@ -96,9 +96,11 @@ int main(int argc, char *argv[])
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.6,0};
 
-	float posObs[3] = {0, (limit.getT()/2), 0};
+	float posObs[3] = {0, (limit.getT()/3), -3};
 
 	float direcaoCamera[3] = {1,0,0};
+
+	float raioColisao = 1.0;
 
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -137,6 +139,11 @@ int main(int argc, char *argv[])
     objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
     objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
     objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+
+	//calcula a AABB de todo mundo pra poder testar contra colisões depois
+	for (unsigned i=0 ; i<objetos.size() ; ++i)
+		objetos[i]->calculaAABB();
+
 	//loop pra manter o programa aberto
 	while (rodando)
 
@@ -155,9 +162,9 @@ int main(int argc, char *argv[])
 		Uint8 *teclado = SDL_GetKeyState(0);
 
 		if (teclado[SDLK_LEFT])
-			angulo -= .01;
+			angulo -= .03;
 		if (teclado[SDLK_RIGHT])
-			angulo += .01;
+			angulo += .03;
 
 		if (teclado[SDLK_a])
 		{
@@ -184,6 +191,17 @@ int main(int argc, char *argv[])
 		direcaoCamera[0] = cos(angulo);
 		direcaoCamera[1] = 0;
 		direcaoCamera[2] = sin(angulo);
+
+		//checa se bateu em alguma coisa
+		for (unsigned i=0 ; i<objetos.size() ; ++i)
+		{
+			float normal[3];
+			if (objetos[i]->testaColisao(posObs, raioColisao, normal))
+			{
+				posObs[0] += normal[0];
+				posObs[2] += normal[2];
+			}
+		}
 
 		glClearColor(1,0,0,0);
 		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -237,6 +255,8 @@ int main(int argc, char *argv[])
 			focoCamera[0], focoCamera[1], focoCamera[2],
 			0, 1, 0);
 
+//		gluLookAt(7, 2, 7, 0, 0, 0, 0, 1, 0);
+
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
         glDisable(GL_LIGHT0);
@@ -245,29 +265,37 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
 
 		//desenha todos os objetos
-		for (int i=0 ; i<objetos.size() ; ++i)
+		for (unsigned i=0 ; i<objetos.size() ; ++i)
+		{
 			objetos[i]->desenha();
+			objetos[i]->desenhaAABB();
+		}
+		
+		//desenha uma "esfera" na frente do personagem pra saber onde ele
+		//vai bater..
+		glDisable(GL_LIGHTING);
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(1,0,0);
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[1], posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0], posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0] + raioColisao*sin(i * 2. * M_PI / 16.), posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2]);
+		glEnd();
+		glColor3f(1,1,1);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
 
 		//desenha nosso querido e super legal skybox!
 		desenha_skybox(texturaSkybox, 50.0f);
 
 //		desenha_grid();
-#if 0
-		//Isso seria pra desenhar uma parede, por exemplo.
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(posObs[0], posObs[1], posObs[2],
-                0, 0, 0,
-				0, 1, 0);
-
-		glBegin(GL_QUADS);
-			glNormal3f(0,0,-1);
-			glVertex3f(5,  0, 5);
-			glVertex3f(5, 10, 5);
-			glVertex3f(6, 10, 5);
-			glVertex3f(6,  0, 5);
-		glEnd();
-#endif
 
 		SDL_GL_SwapBuffers();
 		SDL_Delay(10);
