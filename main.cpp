@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.6,0};
 
-	float posObs[3] = {0, (limit.getT()/3), 0};
+	float posObs[3] = {0, (limit.getT()/3), -3};
 
 	float direcaoCamera[3] = {1,0,0};
 
@@ -162,9 +162,9 @@ int main(int argc, char *argv[])
 		Uint8 *teclado = SDL_GetKeyState(0);
 
 		if (teclado[SDLK_LEFT])
-			angulo -= .01;
+			angulo -= .03;
 		if (teclado[SDLK_RIGHT])
-			angulo += .01;
+			angulo += .03;
 
 		if (teclado[SDLK_a])
 		{
@@ -193,20 +193,15 @@ int main(int argc, char *argv[])
 		direcaoCamera[2] = sin(angulo);
 
 		//checa se bateu em alguma coisa
-		bool colidiu = false;
-		int indiceColidiu = -1;
-		std::string nomeModeloColidiu;
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
-			if (objetos[i]->testaColisao(posObs, raioColisao))
+		{
+			float normal[3];
+			if (objetos[i]->testaColisao(posObs, raioColisao, normal))
 			{
-				colidiu = true;
-				nomeModeloColidiu = objetos[i]->nome_modelo;
-				indiceColidiu = i;
+				posObs[0] += normal[0];
+				posObs[2] += normal[2];
 			}
-		if (colidiu)
-			std::cout << "COLIDIU " << nomeModeloColidiu << std::endl;
-		else
-			std::cout << "NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO\n";
+		}
 
 		glClearColor(1,0,0,0);
 		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -255,12 +250,12 @@ int main(int argc, char *argv[])
 			posObs[1] + direcaoCamera[1],
 			posObs[2] + direcaoCamera[2]
 		};
-//		gluLookAt(
-//			posObs[0], posObs[1], posObs[2],
-//			focoCamera[0], focoCamera[1], focoCamera[2],
-//			0, 1, 0);
-//
-		gluLookAt(7, 2, 7, 0, 0, 0, 0, 1, 0);
+		gluLookAt(
+			posObs[0], posObs[1], posObs[2],
+			focoCamera[0], focoCamera[1], focoCamera[2],
+			0, 1, 0);
+
+//		gluLookAt(7, 2, 7, 0, 0, 0, 0, 1, 0);
 
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
@@ -272,15 +267,6 @@ int main(int argc, char *argv[])
 		//desenha todos os objetos
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
 		{
-			if (colidiu)
-			{
-				if (indiceColidiu == i)
-					glColor3f(1,0,0);
-			}
-			else
-			{
-				glColor3f(1,1,1);
-			}
 			objetos[i]->desenha();
 			objetos[i]->desenhaAABB();
 		}
@@ -306,27 +292,10 @@ int main(int argc, char *argv[])
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_LIGHTING);
 
-
 		//desenha nosso querido e super legal skybox!
 		desenha_skybox(texturaSkybox, 50.0f);
 
 //		desenha_grid();
-#if 0
-		//Isso seria pra desenhar uma parede, por exemplo.
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(posObs[0], posObs[1], posObs[2],
-                0, 0, 0,
-				0, 1, 0);
-
-		glBegin(GL_QUADS);
-			glNormal3f(0,0,-1);
-			glVertex3f(5,  0, 5);
-			glVertex3f(5, 10, 5);
-			glVertex3f(6, 10, 5);
-			glVertex3f(6,  0, 5);
-		glEnd();
-#endif
 
 		SDL_GL_SwapBuffers();
 		SDL_Delay(10);

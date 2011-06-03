@@ -35,7 +35,7 @@ public:
 	void desenhaAABB();
 	void desenha();
 
-	bool testaColisao(float posicao[3], float raio);
+	bool testaColisao(float posicao[3], float raio, float normal[3]);
 
 	Transformacao transformacao;
 	Modelo modelo;

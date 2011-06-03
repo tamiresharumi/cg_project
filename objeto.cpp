@@ -126,7 +126,7 @@ void Objeto::desenhaAABB()
 	glEnable(GL_LIGHTING);
 }
 
-bool Objeto::testaColisao(float posicao[3], float raio)
+bool Objeto::testaColisao(float posicao[3], float raio, float normal[3])
 {
 	//primeira parte: encontra o ponto na AABB mais próximo da posicao[3]
 	float ponto[3];
@@ -150,6 +150,19 @@ bool Objeto::testaColisao(float posicao[3], float raio)
 	//terceira parte: checa se colidiu ou não. é só testar se a distância do
 	//ponto até a AABB é menor que o raio da esfera
 	bool colidiu = dist2 <= raio * raio;
+
+	if (colidiu)
+	{
+		float comprimento = sqrt(dist2);
+		float intrusao = raio - comprimento;
+		//aqui é só pra calcular a normal da colisão, isto é, saber "de onde ela veio"
+		//pra poder tratá-la no programa principal
+		for (int i=0 ; i<3 ; ++i) {
+			normal[i] = posicao[i] - ponto[i];
+			normal[i] = normal[i] * intrusao / comprimento;
+		}
+	}
+
 	return colidiu;
 }
 
