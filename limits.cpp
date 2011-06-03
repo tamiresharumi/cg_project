@@ -1,6 +1,7 @@
 #include "limits.h"
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #define TESTE 1
 
 
@@ -28,6 +29,9 @@ float Limits::getL(void){
 int Limits::readFile(const char *filename)
 {
     FILE* f = fopen(filename, "r+");
+    bool l = 0;
+    C = 0;
+    L = 0;
 
     if(!f) printf("Arquivo nao foi aberto!\n");
     printf("xD\n\n");
@@ -38,10 +42,15 @@ int Limits::readFile(const char *filename)
         {
             if (linha[0] == '#' && linha[1] == 'T')
                 sscanf(linha, "#T %d", &T);
-            else if (linha[0] == '#' && linha[1] == 'C')
-                sscanf(linha, "#C %d", &C);
-            else if (linha[0] == '#' && linha[1] == 'L')
-                sscanf(linha, "#L %d", &L);
+            else if ((linha[0] >= 'A')&&(linha[0] <= 'Z'))
+                if(l)
+                    L++;
+                else {
+                    C = (strlen(linha)) - 1;
+                    printf("C = %d\n", C);
+                    l = 1;
+                    L++;
+                }
         }
 	}
 	fclose(f);
@@ -59,9 +68,6 @@ int Limits::getFloor(float y, const char* arq){
 
     float px = (L/inc)+1;
     float pz = (C/inc)+1;
-
-
-//    printf("px|%f\npz|%f\n\n", px, pz);
     if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
         return 0;
