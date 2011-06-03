@@ -5,10 +5,10 @@
 #include <vector>
 #include <cmath>
 #include <SOIL/SOIL.h>
-#include "objeto.h"
 #include "limits.h"
 #include <cstdio>
-
+#include <iostream>
+#include "objeto.h"
 
 void desenha_grid()
 {
@@ -96,9 +96,11 @@ int main(int argc, char *argv[])
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.6,0};
 
-	float posObs[3] = {0, (limit.getT()/2), 0};
+	float posObs[3] = {0, (limit.getT()/3), 0};
 
 	float direcaoCamera[3] = {1,0,0};
+
+	float raioColisao = 1.0;
 
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -133,10 +135,15 @@ int main(int argc, char *argv[])
 	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
     objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
     objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-    objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
-    objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
-    objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
-    objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+//    objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+//    objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+//    objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+ //   objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+
+	//calcula a AABB de todo mundo pra poder testar contra colisões depois
+	for (unsigned i=0 ; i<objetos.size() ; ++i)
+		objetos[i]->calculaAABB();
+
 	//loop pra manter o programa aberto
 	while (rodando)
 
@@ -185,6 +192,22 @@ int main(int argc, char *argv[])
 		direcaoCamera[1] = 0;
 		direcaoCamera[2] = sin(angulo);
 
+		//checa se bateu em alguma coisa
+		bool colidiu = false;
+		int indiceColidiu = -1;
+		std::string nomeModeloColidiu;
+		for (unsigned i=0 ; i<objetos.size() ; ++i)
+			if (objetos[i]->testaColisao(posObs, raioColisao))
+			{
+				colidiu = true;
+				nomeModeloColidiu = objetos[i]->nome_modelo;
+				indiceColidiu = i;
+			}
+		if (colidiu)
+			std::cout << "COLIDIU " << nomeModeloColidiu << std::endl;
+		else
+			std::cout << "NAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAO\n";
+
 		glClearColor(1,0,0,0);
 		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -232,10 +255,12 @@ int main(int argc, char *argv[])
 			posObs[1] + direcaoCamera[1],
 			posObs[2] + direcaoCamera[2]
 		};
-		gluLookAt(
-			posObs[0], posObs[1], posObs[2],
-			focoCamera[0], focoCamera[1], focoCamera[2],
-			0, 1, 0);
+//		gluLookAt(
+//			posObs[0], posObs[1], posObs[2],
+//			focoCamera[0], focoCamera[1], focoCamera[2],
+//			0, 1, 0);
+//
+		gluLookAt(10, 2, 10, 0, 0, 0, 0, 1, 0);
 
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
@@ -245,8 +270,42 @@ int main(int argc, char *argv[])
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
 
 		//desenha todos os objetos
-		for (int i=0 ; i<objetos.size() ; ++i)
+		for (unsigned i=0 ; i<objetos.size() ; ++i)
+		{
+			if (colidiu)
+			{
+				if (indiceColidiu == i)
+					glColor3f(1,0,0);
+			}
+			else
+			{
+				glColor3f(1,1,1);
+			}
 			objetos[i]->desenha();
+			objetos[i]->desenhaAABB();
+		}
+		
+		//desenha uma "esfera" na frente do personagem pra saber onde ele
+		//vai bater..
+		glDisable(GL_LIGHTING);
+		glDisable(GL_TEXTURE_2D);
+		glColor3f(1,0,0);
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[1], posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0], posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
+		glEnd();
+		glBegin(GL_LINE_STRIP);
+		for (int i=0 ; i<=16 ; ++i)
+			glVertex3f(posObs[0] + raioColisao*sin(i * 2. * M_PI / 16.), posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2]);
+		glEnd();
+		glColor3f(1,1,1);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+
 
 		//desenha nosso querido e super legal skybox!
 		desenha_skybox(texturaSkybox, 50.0f);

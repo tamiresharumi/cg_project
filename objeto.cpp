@@ -6,6 +6,7 @@
 
 Objeto::Objeto(const char *nomeModelo, Transformacao trans, const char *tex)
 {
+	nome_modelo = nomeModelo;
 	modelo.carrega(nomeModelo);
 	transformacao = trans;
 	textura = 0;
@@ -78,6 +79,43 @@ void Objeto::desenha()
 		glEnable(GL_TEXTURE_2D);
 }
 
+void Objeto::desenhaAABB()
+{
+	float vertices[][3] =
+	{
+		{aabb.min[0], aabb.min[1], aabb.min[2]},
+		{aabb.max[0], aabb.min[1], aabb.min[2]},
+		{aabb.min[0], aabb.max[1], aabb.min[2]},
+		{aabb.max[0], aabb.max[1], aabb.min[2]},
+		{aabb.min[0], aabb.min[1], aabb.max[2]},
+		{aabb.max[0], aabb.min[1], aabb.max[2]},
+		{aabb.min[0], aabb.max[1], aabb.max[2]},
+		{aabb.max[0], aabb.max[1], aabb.max[2]},
+	};
+
+	short indices[][2] =
+	{
+		{0,1}, {0,2}, {0,4},
+		{3,1}, {3,2}, {3,7},
+		{6,2}, {6,4}, {6,7},
+		{5,7}, {5,1}, {5,4}
+	};
+
+	glColor3f(1,0,0);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+		for (int i=0 ; i<12 ; ++i)
+		{
+			glVertex3fv(vertices[indices[i][0]]);
+			glVertex3fv(vertices[indices[i][1]]);
+		}
+	glEnd();
+	glColor3f(1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+}
+
 bool Objeto::testaColisao(float posicao[3], float raio)
 {
 	//primeira parte: encontra o ponto na AABB mais próximo da posicao[3]
@@ -101,7 +139,7 @@ bool Objeto::testaColisao(float posicao[3], float raio)
 
 	//terceira parte: checa se colidiu ou não. é só testar se a distância do
 	//ponto até a AABB é menor que o raio da esfera
-	bool colidiu = dist2 <= raio;
+	bool colidiu = dist2 <= raio * raio;
 	return colidiu;
 }
 

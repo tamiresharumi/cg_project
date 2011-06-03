@@ -1,6 +1,7 @@
-#include <stdio.h>
 #ifndef LIMITS_H
 #define LIMITS_H
+
+#include <cstdio>
 
 class Limits
 {
