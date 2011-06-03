@@ -78,3 +78,30 @@ void Objeto::desenha()
 		glEnable(GL_TEXTURE_2D);
 }
 
+bool Objeto::testaColisao(float posicao[3], float raio)
+{
+	//primeira parte: encontra o ponto na AABB mais próximo da posicao[3]
+	float ponto[3];
+
+	for (int i=0 ; i<3 ; ++i)
+	{
+		float v = posicao[i];
+		if (v < aabb.min[i]) v = aabb.min[i];
+		if (v > aabb.max[i]) v = aabb.max[i];
+		ponto[i] = v;
+	}
+
+	//calcula a distância (ao quadrado, pra economizar um sqrt) até a AABB
+	float dist2 = 0;
+	for (int i=0 ; i<3 ; ++i)
+	{
+		float d = ponto[i] - posicao[i];
+		dist2 += d*d;
+	}
+
+	//terceira parte: checa se colidiu ou não. é só testar se a distância do
+	//ponto até a AABB é menor que o raio da esfera
+	bool colidiu = dist2 <= raio;
+	return colidiu;
+}
+

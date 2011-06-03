@@ -34,6 +34,8 @@ public:
 
 	void desenha();
 
+	bool testaColisao(float posicao[3], float raio);
+
 	Transformacao transformacao;
 	Modelo modelo;
 	unsigned textura;
