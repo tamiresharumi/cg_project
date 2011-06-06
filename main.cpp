@@ -87,10 +87,12 @@ void desenha_skybox(unsigned skyboxTex, float meioLado)
 
 int main(int argc, char *argv[])
 {
+	(void)argc;
+	(void)argv;
+
 	Limits limit;
 	int rodando = 1;
 	float angulo = 30.00f;
-	float posPonto[3] = {0, 0, 0};
 	float posLuz[4] = {-2,limit.getT(),2,0};
 	float posLuz1[4] = {0, limit.getT()/2, 0, 1};
 	float corLuz[4] = {1,1,1,1};
@@ -101,6 +103,8 @@ int main(int argc, char *argv[])
 	float direcaoCamera[3] = {1,0,0};
 
 	float raioColisao = 1.0;
+
+	bool modoDebug = false;
 
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -132,13 +136,13 @@ int main(int argc, char *argv[])
 	std::vector<Objeto*> objetos;
 	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(30, 0, 0, 0), "leathers/glass_leather.jpg"));
 	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
-	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
-//	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
-//	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-//	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
-//	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
-//	objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
-//	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
+	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
+	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+	objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
 
 	//calcula a AABB de todo mundo pra poder testar contra colisões depois
 	for (unsigned i=0 ; i<objetos.size() ; ++i)
@@ -154,6 +158,8 @@ int main(int argc, char *argv[])
 			if (e.type == SDL_KEYDOWN){
 				if (e.key.keysym.sym == SDLK_ESCAPE)
 					rodando = 0;
+				if (e.key.keysym.sym == SDLK_d && SDL_GetModState() & KMOD_CTRL)
+					modoDebug = !modoDebug;
 			}
 			if (e.type == SDL_QUIT)
 				rodando = 0;
@@ -268,30 +274,37 @@ int main(int argc, char *argv[])
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
 		{
 			objetos[i]->desenha();
-			objetos[i]->desenhaOBB();
 		}
-		
-		//desenha uma "esfera" na frente do personagem pra saber onde ele
-		//vai bater..
-		glDisable(GL_LIGHTING);
-		glDisable(GL_TEXTURE_2D);
-		glColor3f(1,0,0);
-		glBegin(GL_LINE_STRIP);
-		for (int i=0 ; i<=16 ; ++i)
-			glVertex3f(posObs[0] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[1], posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for (int i=0 ; i<=16 ; ++i)
-			glVertex3f(posObs[0], posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2] + raioColisao*sin(i * 2. * M_PI / 16.));
-		glEnd();
-		glBegin(GL_LINE_STRIP);
-		for (int i=0 ; i<=16 ; ++i)
-			glVertex3f(posObs[0] + raioColisao*sin(i * 2. * M_PI / 16.), posObs[1] + raioColisao*cos(i * 2. * M_PI / 16.), posObs[2]);
-		glEnd();
-		glColor3f(1,1,1);
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_LIGHTING);
-
+	
+		if (modoDebug)
+		{
+			for (unsigned i=0 ; i<objetos.size() ; ++i)
+				objetos[i]->desenhaOBB();
+			//desenha uma "esfera" na frente do personagem pra saber onde ele
+			//vai bater..
+			glDisable(GL_LIGHTING);
+			glDisable(GL_TEXTURE_2D);
+			glColor3f(1,0,0);
+			glPushMatrix();
+			glTranslatef(posObs[0], posObs[1], posObs[2]);
+			glRotatef(-angulo*180/M_PI, 0, 1, 0);
+			glBegin(GL_LINE_STRIP);
+			for (int i=0 ; i<=16 ; ++i)
+				glVertex3f(raioColisao*cos(i * 2. * M_PI / 16.), 0, raioColisao*sin(i * 2. * M_PI / 16.));
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+			for (int i=0 ; i<=16 ; ++i)
+				glVertex3f(0, raioColisao*cos(i * 2. * M_PI / 16.), raioColisao*sin(i * 2. * M_PI / 16.));
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+			for (int i=0 ; i<=16 ; ++i)
+				glVertex3f(raioColisao*sin(i * 2. * M_PI / 16.), raioColisao*cos(i * 2. * M_PI / 16.), 0);
+			glEnd();
+			glColor3f(1,1,1);
+			glPopMatrix();
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_LIGHTING);
+		}
 		//desenha nosso querido e super legal skybox!
 		desenha_skybox(texturaSkybox, 50.0f);
 

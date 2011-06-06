@@ -54,13 +54,13 @@ void Objeto::calculaOBB()
 
 	//a rotação da transformação tá em graus, precisamos de radianos pra sin e cos
 	float ang = transformacao.rotacao * M_PI / 180.0f;
-	obb.u[0][0] = cos(ang);
+	obb.u[0][0] = -cos(ang);
 	obb.u[0][1] = 0;
 	obb.u[0][2] = sin(ang);
 	obb.u[1][0] = 0;
 	obb.u[1][1] = 1;
 	obb.u[1][2] = 0;
-	obb.u[2][0] = -sin(ang);
+	obb.u[2][0] = sin(ang);
 	obb.u[2][1] = 0;
 	obb.u[2][2] = cos(ang);
 
