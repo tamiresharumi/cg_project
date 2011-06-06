@@ -7,7 +7,7 @@ SOIL/%.o: SOIL/%.c
 	gcc -c $< -g3 -o $@
 
 %.o: %.cpp
-	g++ -I. -c -g3 $<
+	g++ -I. -c -g3 -Wall -Wextra $<
 
 all: $(EXE)
 

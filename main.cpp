@@ -130,19 +130,19 @@ int main(int argc, char *argv[])
 	);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, 0, 0, 0), "leathers/glass_leather.jpg"));
+	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(30, 0, 0, 0), "leathers/glass_leather.jpg"));
 	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
 	//objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
-    objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
-    objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-    objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
-    objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
-    objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
-    objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+//	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
+//	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
+//	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+//	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+//	objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+//	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
 
 	//calcula a AABB de todo mundo pra poder testar contra colisões depois
 	for (unsigned i=0 ; i<objetos.size() ; ++i)
-		objetos[i]->calculaAABB();
+		objetos[i]->calculaOBB();
 
 	//loop pra manter o programa aberto
 	while (rodando)
@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
 		{
 			objetos[i]->desenha();
-			objetos[i]->desenhaAABB();
+			objetos[i]->desenhaOBB();
 		}
 		
 		//desenha uma "esfera" na frente do personagem pra saber onde ele

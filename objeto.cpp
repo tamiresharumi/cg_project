@@ -19,8 +19,10 @@ Objeto::Objeto(const char *nomeModelo, Transformacao trans, const char *tex)
 	}
 }
 
-void Objeto::calculaAABB()
+void Objeto::calculaOBB()
 {
+	AABB aabb;
+
 	//coloca os piores valores possíveis: com certeza vão ser sobrescritos no loop
 	aabb.min[0] = aabb.min[1] = aabb.min[2] = +std::numeric_limits<float>::max();
 	aabb.max[0] = aabb.max[1] = aabb.max[2] = -std::numeric_limits<float>::max();
@@ -47,24 +49,24 @@ void Objeto::calculaAABB()
 	//que na hora que for testar a colisão, testar com o objeto rotacionado, e
 	//não o original
 	
+	for (int i=0 ; i<3 ; ++i)
+		obb.e[i] = (aabb.max[i] - aabb.min[i])/2.0f;
+
 	//a rotação da transformação tá em graus, precisamos de radianos pra sin e cos
 	float ang = transformacao.rotacao * M_PI / 180.0f;
-	//a rotação é no eixo Y, então não precisa alterar o valor da coordenada Y. UHU!
-	float tmpX = aabb.min[0];
-	float tmpZ = aabb.min[2];
-	aabb.min[0] = +cos(ang) * tmpX + sin(ang) * tmpZ;
-	aabb.min[2] = -sin(ang) * tmpX + cos(ang) * tmpZ;
-	
-	tmpX = aabb.max[0];
-	tmpZ = aabb.max[2];
-	aabb.max[0] = +cos(ang) * tmpX + sin(ang) * tmpZ;
-	aabb.max[2] = -sin(ang) * tmpX + cos(ang) * tmpZ;
+	obb.u[0][0] = cos(ang);
+	obb.u[0][1] = 0;
+	obb.u[0][2] = sin(ang);
+	obb.u[1][0] = 0;
+	obb.u[1][1] = 1;
+	obb.u[1][2] = 0;
+	obb.u[2][0] = -sin(ang);
+	obb.u[2][1] = 0;
+	obb.u[2][2] = cos(ang);
 
 	//por fim, leva em conta a translação do objeto
 	for (int i=0 ; i<3 ; ++i)
-		aabb.min[i] += transformacao.posicao[i];
-	for (int i=0 ; i<3 ; ++i)
-		aabb.max[i] += transformacao.posicao[i];
+		obb.centro[i] = transformacao.posicao[i] + (aabb.min[i] + aabb.max[i]) / 2;
 }
 
 void Objeto::desenha()
@@ -89,18 +91,18 @@ void Objeto::desenha()
 		glEnable(GL_TEXTURE_2D);
 }
 
-void Objeto::desenhaAABB()
+void Objeto::desenhaOBB()
 {
 	float vertices[][3] =
 	{
-		{aabb.min[0], aabb.min[1], aabb.min[2]},
-		{aabb.max[0], aabb.min[1], aabb.min[2]},
-		{aabb.min[0], aabb.max[1], aabb.min[2]},
-		{aabb.max[0], aabb.max[1], aabb.min[2]},
-		{aabb.min[0], aabb.min[1], aabb.max[2]},
-		{aabb.max[0], aabb.min[1], aabb.max[2]},
-		{aabb.min[0], aabb.max[1], aabb.max[2]},
-		{aabb.max[0], aabb.max[1], aabb.max[2]},
+		/*{aabb.min[0], aabb.min[1], aabb.min[2]},*/ {-obb.e[0], -obb.e[1], -obb.e[2]},
+		/*{aabb.max[0], aabb.min[1], aabb.min[2]},*/ {+obb.e[0], -obb.e[1], -obb.e[2]},
+		/*{aabb.min[0], aabb.max[1], aabb.min[2]},*/ {-obb.e[0], +obb.e[1], -obb.e[2]},
+		/*{aabb.max[0], aabb.max[1], aabb.min[2]},*/ {+obb.e[0], +obb.e[1], -obb.e[2]},
+		/*{aabb.min[0], aabb.min[1], aabb.max[2]},*/ {-obb.e[0], -obb.e[1], +obb.e[2]},
+		/*{aabb.max[0], aabb.min[1], aabb.max[2]},*/ {+obb.e[0], -obb.e[1], +obb.e[2]},
+		/*{aabb.min[0], aabb.max[1], aabb.max[2]},*/ {-obb.e[0], +obb.e[1], +obb.e[2]},
+		/*{aabb.max[0], aabb.max[1], aabb.max[2]},*/ {+obb.e[0], +obb.e[1], +obb.e[2]},
 	};
 
 	short indices[][2] =
@@ -114,6 +116,9 @@ void Objeto::desenhaAABB()
 	glColor3f(1,0,0);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
+	glPushMatrix();
+	glTranslatef(obb.centro[0], obb.centro[1], obb.centro[2]);
+	glRotatef(transformacao.rotacao, 0, 1, 0);
 	glBegin(GL_LINES);
 		for (int i=0 ; i<12 ; ++i)
 		{
@@ -121,6 +126,7 @@ void Objeto::desenhaAABB()
 			glVertex3fv(vertices[indices[i][1]]);
 		}
 	glEnd();
+	glPopMatrix();
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
@@ -130,13 +136,23 @@ bool Objeto::testaColisao(float posicao[3], float raio, float normal[3])
 {
 	//primeira parte: encontra o ponto na AABB mais próximo da posicao[3]
 	float ponto[3];
+	float d[3];
 
 	for (int i=0 ; i<3 ; ++i)
 	{
-		float v = posicao[i];
-		if (v < aabb.min[i]) v = aabb.min[i];
-		if (v > aabb.max[i]) v = aabb.max[i];
-		ponto[i] = v;
+		d[i] = posicao[i] - obb.centro[i];
+		ponto[i] = obb.centro[i];
+	}
+
+	for (int i=0 ; i<3 ; ++i)
+	{
+		#define PROD_ESCALAR(d,u) d[0]*u[0] + d[1]*u[1] + d[2]*u[2]
+		float dist = PROD_ESCALAR(d, obb.u[i]);
+		if (dist > obb.e[i]) dist = obb.e[i];
+		if (dist < -obb.e[i]) dist = -obb.e[i];
+		for (int j=0 ; j<3 ; ++j)
+			ponto[j] += dist * obb.u[i][j];
+		#undef PROD_ESCALAR
 	}
 
 	//calcula a distância (ao quadrado, pra economizar um sqrt) até a AABB
