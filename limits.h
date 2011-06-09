@@ -2,6 +2,8 @@
 #define LIMITS_H
 
 #include <cstdio>
+#include <vector>
+#include "objeto.h"
 
 class Limits
 {
@@ -11,7 +13,7 @@ class Limits
         float getT(void);
         float getC(void);
         float getL(void);
-
+		void readModels(std::vector<Objeto*> &objetos);
     private:
         int readFile(const char *filename);
         int getFloor(float y, const char* arq);

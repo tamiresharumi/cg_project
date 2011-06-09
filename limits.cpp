@@ -43,6 +43,7 @@ int Limits::readFile(const char *filename)
             if (linha[0] == '#' && linha[1] == 'T')
                 sscanf(linha, "#T %d", &T);
             else if ((linha[0] >= 'A')&&(linha[0] <= 'Z'))
+			{
                 if(l)
                     L++;
                 else {
@@ -51,6 +52,7 @@ int Limits::readFile(const char *filename)
                     l = 1;
                     L++;
                 }
+			}
         }
 	}
 	fclose(f);
@@ -59,6 +61,8 @@ int Limits::readFile(const char *filename)
     getFloor(T, "p6.obj");
     getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
     getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
+
+	return 1;
 }
 
 
@@ -111,8 +115,7 @@ int Limits::getFloor(float y, const char* arq){
 
 int Limits::getWall(bool xz, const char* arqr, const char *arql){
 
-   float i, j;
-       //TODO verificar arquivo e comparar dados com o programa atual
+   //TODO verificar arquivo e comparar dados com o programa atual
     FILE *a = fopen(arqr, "w+");
     FILE *b = fopen(arql, "w+");
     if(!xz){
@@ -121,6 +124,7 @@ int Limits::getWall(bool xz, const char* arqr, const char *arql){
     else getWallZ(a, b);
     fclose(a);
     fclose(b);
+	return 1;
 }
 
 int Limits::getWallX(FILE* right, FILE *left){
@@ -172,6 +176,7 @@ int Limits::getWallX(FILE* right, FILE *left){
                         (pz*i)+(j+1), (i+1)*pz + j, (i+1)*pz + j+1);
         }
     }
+	return 1;
 }
 
 
@@ -221,4 +226,44 @@ int Limits::getWallZ(FILE* front, FILE *behind){
                    (px*i)+(j+1), (i+1)*px + j, (i+1)*px + j+1);
         }
     }
+	return 1;
 }
+
+void Limits::readModels(std::vector<Objeto*> &objetos)
+{
+	const char *roomFile = "room.model";
+	char map[0xff][0xff];
+
+	int firstLine = 0;
+
+	FILE *f = fopen(roomFile, "r");
+	while (fgets(map[0], 0xff, f))
+	{
+		if (map[0][0] == 'P')
+			break;
+		else
+			++firstLine;
+	}
+
+	for (int i=1 ; i<=L ; ++i)
+	{
+		fgets(map[i], 0xff, f);
+	}
+
+	for (int x=0 ; x<C ; ++x)
+	{
+		for (int y=0 ; y<L ; ++y)
+		{
+			float xx = x * (C-2.0f)/(C-1.0f) + (2-C)/2.0f;
+			float yy = y * (L-2.0f)/(L-1.0f) + (2-L)/2.0f;
+
+			if (map[y][x] == 'S')
+				objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, xx, 0, yy), "leathers/glass_leather.jpg"));
+			if (map[y][x] == 'M')
+				objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, xx, 0, yy)));
+			if (map[y][x] == 'L')
+				objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, xx, 0, yy)));
+		}
+	}
+}
+

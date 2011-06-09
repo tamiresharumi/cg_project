@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 	float corLuz[4] = {1,1,1,1};
 	float corLuz1[4] = {0.9,0.9,0.6,0};
 
-	float posObs[3] = {0, (limit.getT()/3), -3};
+	float posObs[3] = {0, (limit.getT()/3), 0};
 
 	float direcaoCamera[3] = {1,0,0};
 
@@ -134,9 +134,7 @@ int main(int argc, char *argv[])
 	);
 
 	std::vector<Objeto*> objetos;
-	objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(30, 0, 0, 0), "leathers/glass_leather.jpg"));
-	objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, 5, 0, 0)));
-	objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, -5, 0, 0)));
+	limit.readModels(objetos);
 	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
 	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
 	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
@@ -305,6 +303,7 @@ int main(int argc, char *argv[])
 			glEnable(GL_TEXTURE_2D);
 			glEnable(GL_LIGHTING);
 		}
+
 		//desenha nosso querido e super legal skybox!
 		desenha_skybox(texturaSkybox, 50.0f);
 
