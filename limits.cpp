@@ -92,10 +92,11 @@ int Limits::readFile(const char *filename, std::vector<Objeto*> &objetos)
         else
             fclose(t);
     }
+    printf("i is %d\n", i);
     if(i>7){
-        getFloor(0, "p1.obj");
-        getFloor(T, "p6.obj");
-        getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
+        getFloor(0, "walls/p1.obj");
+        getFloor(T, "walls/p6.obj");
+        getWall(0,"walls/p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
         getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
     }
 
@@ -173,6 +174,31 @@ int Limits::readFile(const char *filename, std::vector<Objeto*> &objetos)
 				objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, xx, 0, yy)));
 			if (map[y][x] == 'L')
 				objetos.push_back(new Objeto("models/floor_lamp.obj", Transformacao(0, xx, 0, yy)));
+            if ( (map[y][x] == 'J') && ( (map[y-1][x] != 'J') || (map[y][x-1] != 'J') ) ){
+                _t janela;
+                if(x == L)
+                {
+                    //parede da direita
+                    janela.wPosition = y;
+                    janela.wWall = 2;
+                }
+                else if(x == 0)
+                {
+                    //parede da esquerda
+                    janela.wPosition = y;
+                    janela.wWall = 4;
+                }
+                else {
+                    janela.wPosition = x;
+                    if(y == 0)
+                        janela.wWall = 1;
+                    else
+                        janela.wWall = 3;
+                }
+
+
+                Janelas.push_back(janela);
+            }
 		}
 	}
 	return 1;
@@ -227,21 +253,25 @@ int Limits::getFloor(float y, const char* arq){
 
 int Limits::getWall(bool xz, const char* arqr, const char *arql){
 
-   //TODO verificar arquivo e comparar dados com o programa atual
     FILE *a = fopen(arqr, "w+");
     FILE *b = fopen(arql, "w+");
-    if(!xz){
-        getWallX(a, b);
+    if(J>0){
     }
-    else getWallZ(a, b);
+
+    if(!xz){
+        getWallX(a, b, T, C);
+    }
+    else getWallZ(a, b, L, T);
     fclose(a);
     fclose(b);
 	return 1;
 }
 
-int Limits::getWallX(FILE* right, FILE *left){
+int Limits::getWallX(FILE* right, FILE *left, int defT, int defC){
 
     float i, j;
+    T = defT;
+    C = defC;
     float py = (T/inc)+1;
     float pz = (C/inc)+1;
 #if TESTE
@@ -292,9 +322,12 @@ int Limits::getWallX(FILE* right, FILE *left){
 }
 
 
-int Limits::getWallZ(FILE* front, FILE *behind){
+int Limits::getWallZ(FILE* front, FILE *behind, int defL, int defT){
 
     float i, j;
+    L = defL;
+    T = defT;
+
     float px = (L/inc)+1;
     float py = (T/inc)+1;
 

@@ -5,6 +5,12 @@
 #include <vector>
 #include "objeto.h"
 
+struct _t{
+    int wWall;
+    int wPosition;
+};
+
+
 class Limits
 {
     public:
@@ -17,10 +23,12 @@ class Limits
         int readFile(const char *filename, std::vector<Objeto*> &objetos);
         int getFloor(float y, const char* arq);
         int getWall(bool xz, const char* arqr, const char *arql);
-        int getWallX(FILE *right, FILE *left);
-        int getWallZ(FILE *front, FILE *behind);
+        int getWallX(FILE *right, FILE *left, int defT, int defC);
+        int getWallZ(FILE *front, FILE *behind, int defL, int defT);
         float inc;
         int C ,L, T, J;
+        //em que parede a janela está e em que posicao
+        std::vector<_t> Janelas;
         /**
         C de comprimento - tamanho em z
         L de largura - tamanho em x
