@@ -31,7 +31,7 @@ int Limits::readFile(const char *filename)
 {
     FILE* f = fopen(filename, "r+");
     FILE* t;
-    int i;
+    int i=0;
     char testes[15];
     bool l = 0;
     C = 0;
@@ -44,8 +44,14 @@ int Limits::readFile(const char *filename)
 	{
         if (fgets(linha, 255, f))
         {
-            if (linha[0] == '#' && linha[1] == 'T')
-                sscanf(linha, "#T %d", &T);
+            if (linha[0] == '#')
+            {
+                if (linha[1] == 'T')
+                    sscanf(linha, "#T %d", &T);
+
+                else if linha[1] == 'J')
+                    sscanf(linha, "#J %d", &J);
+            }
             else if ((linha[0] >= 'A')&&(linha[0] <= 'Z'))
 			{
                 if(l)
@@ -58,6 +64,7 @@ int Limits::readFile(const char *filename)
                 }
 			}
         }
+        i++;
 	}
 	fclose(f);
 
@@ -245,6 +252,10 @@ int Limits::getWallZ(FILE* front, FILE *behind){
 void Limits::readModels(std::vector<Objeto*> &objetos)
 {
 	const char *roomFile = "room.model";
+
+	int direction;
+	int smaller;
+
 	char map[0xff][0xff];
 
 	int firstLine = 0;
@@ -270,8 +281,68 @@ void Limits::readModels(std::vector<Objeto*> &objetos)
 			float xx = x * (C-2.0f)/(C-1.0f) + (2-C)/2.0f;
 			float yy = y * (L-2.0f)/(L-1.0f) + (2-L)/2.0f;
 
-			if (map[y][x] == 'S')
-				objetos.push_back(new Objeto("models/t_sofa3.obj", Transformacao(0, xx, 0, yy), "leathers/glass_leather.jpg"));
+            smaller = y;
+            direction = 0;
+            if(smaller > x)
+            {
+                direction = 1;
+                smaller = x;
+            }
+            if(smaller > (L-y))
+            {
+                direction = 2;
+                smaller = L-y;
+            }
+            if(smaller > (C-x))
+            {
+                direction = 3;
+                smaller = 1;
+            }
+
+
+			if ((map[y][x] == 'S')&&((map[y-1][x] != 'S')||(map[y][x-1] != 'S'))) //sofa
+			{
+                if(map[y][x+1] == 'S')//testa dois lugares
+                {
+                    if(2*y<L)
+                        direction = 0;
+                    else direction = 2;
+
+                    if(map[y][x+2] == 'S') //testa tres lugares
+                    {
+                        //desenha sofá de 3 lugares
+                    }
+                    else
+                    {
+                        printf("(2*%d) < %d\ndirection is %d\n", y, L, direction);
+                        objetos.push_back(new Objeto("models/sofa2.obj", Transformacao(90*direction, xx, 0, yy), "leathers/fur_leather.jpg"));
+                        x+=2;
+                    }
+                }
+                else if (map[y+1][x] == 'S') //testa dois lugares
+                {
+                    if(2*x<C)
+                        direction = 1;
+                    else direction = 3;
+                    if(map[y+2][x] == 'S') //testa tres lugares
+                    {
+                        //desenha sofa 3 lugares virado pra algum lugar
+                    }
+                    else
+                    {
+                        printf("(2*%d) < %d\ndirection is %d\n", y, L, direction);
+                        objetos.push_back(new Objeto("models/sofa2.obj", Transformacao(90*direction, xx, 0, yy), "leathers/fur_leather.jpg"));
+                        x+=2;
+                    }
+                }
+                else
+                {
+                    printf("sofa1: direction is %d\n", direction);
+                    objetos.push_back(new Objeto("models/sofa1.obj", Transformacao(90*direction, xx, 0, yy), "leathers/red_velvet_leather.jpg"));
+                }
+
+			}
+
 			if (map[y][x] == 'M')
 				objetos.push_back(new Objeto("models/t_table.obj", Transformacao(0, xx, 0, yy)));
 			if (map[y][x] == 'L')

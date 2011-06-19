@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
 	std::vector<Objeto*> objetos;
 	limit.readModels(objetos);
 	objetos.push_back(new Objeto("walls/p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
-	objetos.push_back(new Objeto("walls/p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-	objetos.push_back(new Objeto("walls/p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+	objetos.push_back(new Objeto("walls/p2.obj", Transformacao(0, 0, 0, 0), "leathers/green_leather.jpg")); //frente OK
+	objetos.push_back(new Objeto("walls/p3.obj", Transformacao(0, 0, 0, 0), "leathers/leather.jpg"));                             //direita OK
 	objetos.push_back(new Objeto("walls/p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
 	objetos.push_back(new Objeto("walls/p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
 	objetos.push_back(new Objeto("walls/p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK

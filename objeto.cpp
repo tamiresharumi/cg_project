@@ -70,6 +70,8 @@ void Objeto::calculaOBB()
 		obb.centro[i] = transformacao.posicao[i] + (aabb.min[i] + aabb.max[i]) / 2;
 }
 
+
+
 void Objeto::desenha()
 {
 	float *posicao = transformacao.posicao;
