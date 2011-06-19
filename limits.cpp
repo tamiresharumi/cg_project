@@ -93,10 +93,10 @@ int Limits::readFile(const char *filename, std::vector<Objeto*> &objetos)
             fclose(t);
     }
     if(i>7){
-        getFloor(0, "p1.obj");
-        getFloor(T, "p6.obj");
-        getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
-        getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
+        getFloor(0, "walls/p1.obj");
+        getFloor(T, "walls/p6.obj");
+        getWall(0,"walls/p3.obj", "walls/p4.obj");  //parede 3: direita; parede 4: esquerda
+        getWall(1, "walls/p2.obj", "walls/p5.obj"); //parede 2: frente; parede 5: atras
     }
 
 	//carrega os modelos do mapa
