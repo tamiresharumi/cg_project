@@ -90,13 +90,23 @@ int main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 
+    //Limits: a classe que faz as paredes da sala
+    //e contem os limites da sala
 	Limits limit;
+
+	//rodando: variavel que mantem o programa aberto
 	int rodando = 1;
+
+	//angulo: angulo que o vetor visao da camera faz com o eixo x
 	float angulo = 30.00f;
-	float posLuz[4] = {-2,limit.getT(),2,0};
-	float posLuz1[4] = {0, limit.getT()/2, 0, 1};
-	float corLuz[4] = {1,1,1,1};
-	float corLuz1[4] = {0.9,0.9,0.6,0};
+
+    //posicao e cor da luz LIGHT0
+	float pLuz0[4] = {-2,(limit.getT())*0.5,2,1};
+    float cLuz0[4] = {0.5,0.5,0.5,1};
+
+    //posicao e cor da luz LIGHT1
+	float pLuz1[4] = {0, limit.getT()/2, 0, 1};
+    float cLuz1[4] = {0.9,0.9,0.6,0};
 
 	float posObs[3] = {0, (limit.getT()/3), 0};
 
@@ -111,12 +121,13 @@ int main(int argc, char *argv[])
 	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
 
 	glEnable(GL_DEPTH_TEST);
-
+	glShadeModel(GL_SMOOTH);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
+//	glEnable(GL_LIGHT1);
 	glEnable(GL_NORMALIZE);
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_COLOR_MATERIAL);
 
 //	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -135,12 +146,12 @@ int main(int argc, char *argv[])
 
 	std::vector<Objeto*> objetos;
 	limit.readModels(objetos);
-	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
-	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
-	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
-	objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
-	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+	objetos.push_back(new Objeto("walls/p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
+	objetos.push_back(new Objeto("walls/p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
+	objetos.push_back(new Objeto("walls/p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+	objetos.push_back(new Objeto("walls/p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+	objetos.push_back(new Objeto("walls/p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+	objetos.push_back(new Objeto("walls/p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
 
 	//calcula a AABB de todo mundo pra poder testar contra colisões depois
 	for (unsigned i=0 ; i<objetos.size() ; ++i)
@@ -207,7 +218,8 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		glClearColor(1,0,0,0);
+        //Define a cor que vai ficar a tela
+		//glClearColor(1,0,0,0);
 		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -259,21 +271,28 @@ int main(int argc, char *argv[])
 			focoCamera[0], focoCamera[1], focoCamera[2],
 			0, 1, 0);
 
-//		gluLookAt(7, 2, 7, 0, 0, 0, 0, 1, 0);
 
-		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
-        glDisable(GL_LIGHT0);
+        // Create light components
+        GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+        GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+        GLfloat emissionLight[] = { 0.8f, 0.8f, 0.8f, 0.5f };
+        // Assign created components to GL_LIGHT0
+        glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+        glLightfv(GL_LIGHT0, GL_POSITION, pLuz0);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, cLuz0);
+		glLightfv(GL_LIGHT0, GL_EMISSION, emissionLight);
 
-        glLightfv(GL_LIGHT1, GL_POSITION, posLuz1);
-		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
+
+        glLightfv(GL_LIGHT1, GL_POSITION, pLuz1);
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, cLuz1);
 
 		//desenha todos os objetos
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
 		{
 			objetos[i]->desenha();
 		}
-	
+
 		if (modoDebug)
 		{
 			for (unsigned i=0 ; i<objetos.size() ; ++i)

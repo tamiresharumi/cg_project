@@ -19,6 +19,7 @@ Objeto::Objeto(const char *nomeModelo, Transformacao trans, const char *tex)
 	}
 }
 
+//OBB: Object Bounding Box
 void Objeto::calculaOBB()
 {
 	AABB aabb;
@@ -30,7 +31,7 @@ void Objeto::calculaOBB()
 	for (int i=0 ; i<modelo.numVerts ; ++i)
 	{
 		float *v = &modelo.verts[i*3];
-		
+
 		//busca o menor e o maior vértice aqui
 		for (int j=0 ; j<3 ; ++j)
 		{
@@ -48,7 +49,7 @@ void Objeto::calculaOBB()
 	//agora que tem a AABB do objeto, tem que levar em conta a rotação dele pra
 	//que na hora que for testar a colisão, testar com o objeto rotacionado, e
 	//não o original
-	
+
 	for (int i=0 ; i<3 ; ++i)
 		obb.e[i] = (aabb.max[i] - aabb.min[i])/2.0f;
 

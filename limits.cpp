@@ -26,9 +26,13 @@ float Limits::getL(void){
     return L;
 }
 
+
 int Limits::readFile(const char *filename)
 {
     FILE* f = fopen(filename, "r+");
+    FILE* t;
+    int i;
+    char testes[15];
     bool l = 0;
     C = 0;
     L = 0;
@@ -56,12 +60,22 @@ int Limits::readFile(const char *filename)
         }
 	}
 	fclose(f);
-    printf("T|%d\nC|%d\nL|%d\n\n", T, C, L);
-    getFloor(0, "p1.obj");
-    getFloor(T, "p6.obj");
-    getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
-    getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
 
+	//testa se é necessário gerar os pes
+    for(i=1;i<=6;i++){
+        sprintf(testes, "walls/p%i.obj", i);
+        t = fopen(testes, "r+");
+        if(t==0)
+            i=8;
+        else
+            fclose(t);
+    }
+    if(i>7){
+        getFloor(0, "p1.obj");
+        getFloor(T, "p6.obj");
+        getWall(0,"p3.obj", "p4.obj");  //parede 3: direita; parede 4: esquerda
+        getWall(1, "p2.obj", "p5.obj"); //parede 2: frente; parede 5: atras
+    }
 	return 1;
 }
 
@@ -69,8 +83,7 @@ int Limits::readFile(const char *filename)
 int Limits::getFloor(float y, const char* arq){
 
     float i, j;
-
-    float px = (L/inc)+1;
+    float px = (L/inc)+ 1;
     float pz = (C/inc)+1;
     if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
