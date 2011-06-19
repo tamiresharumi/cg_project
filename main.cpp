@@ -90,9 +90,10 @@ int main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 
+	std::vector<Objeto*> objetos;
     //Limits: a classe que faz as paredes da sala
     //e contem os limites da sala
-	Limits limit;
+	Limits limit(objetos);
 
 	//rodando: variavel que mantem o programa aberto
 	int rodando = 1;
@@ -157,9 +158,6 @@ int main(int argc, char *argv[])
 		SOIL_CREATE_NEW_ID,
 		SOIL_FLAG_MIPMAPS
 	);
-
-	std::vector<Objeto*> objetos;
-	limit.readModels(objetos);
 
 	//o chao é um objeto especial, usa pra fazer reflexão, então ele ganha uma variável só pra ele! ;)
 	Objeto *objetoChao = new Objeto("walls/p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg");
