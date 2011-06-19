@@ -108,7 +108,21 @@ int main(int argc, char *argv[])
 
 	//inicializa a SDL
 	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
+
+	bool reflexao = false;
+	{
+		//checa se o stencil buffer foi criado direito pra poder habilitar a reflexão
+		int stencilBits;
+		SDL_GL_GetAttribute(SDL_GL_STENCIL_SIZE, &stencilBits);
+		std::cout << "stencilBits: " << stencilBits << std::endl;
+		if (stencilBits != 0)
+		{
+			reflexao = true;
+			glClearStencil(0);
+		}
+	}
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -135,7 +149,9 @@ int main(int argc, char *argv[])
 
 	std::vector<Objeto*> objetos;
 	limit.readModels(objetos);
-	objetos.push_back(new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg"));    //chao OK
+	//o chao é um objeto especial, usa pra fazer reflexão, então ele ganha uma variável só pra ele! ;)
+	Objeto *objetoChao = new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg");
+	//objetos.push_back(objetoChao);    //chao OK
 	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
 	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
 	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
@@ -209,7 +225,7 @@ int main(int argc, char *argv[])
 
 		glClearColor(1,0,0,0);
 		//glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
 
 		//Na projection, sempre coloca só a gluPerspective
 		glMatrixMode(GL_PROJECTION);
@@ -261,6 +277,37 @@ int main(int argc, char *argv[])
 
 //		gluLookAt(7, 2, 7, 0, 0, 0, 0, 1, 0);
 
+		if (reflexao)
+		{
+			//primeiro passo: marcar o stencil buffer
+			glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+			glDepthMask(GL_FALSE);
+
+			glEnable(GL_STENCIL_TEST);
+			glStencilFunc(GL_ALWAYS, 1, 1);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+			objetoChao->desenha();
+
+			glDepthMask(GL_TRUE);
+			glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+			//segundo passo: desenha a reflexão de todos os objetos na área
+			//marcada do stencil buffer
+			glStencilFunc(GL_EQUAL, 1, 1);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+			glPushMatrix();
+				glScalef(1.0, -1.0, 1.0);
+				glLightfv(GL_LIGHT1, GL_POSITION, posLuz1);
+				for (unsigned i=0 ; i<objetos.size() ; ++i)
+				{
+					if (objetos[i] != objetoChao)
+						objetos[i]->desenha();
+				}
+			glPopMatrix();
+			glDisable(GL_STENCIL_TEST);
+		}
+
 		glLightfv(GL_LIGHT0, GL_POSITION, posLuz);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, corLuz);
         glDisable(GL_LIGHT0);
@@ -268,11 +315,24 @@ int main(int argc, char *argv[])
         glLightfv(GL_LIGHT1, GL_POSITION, posLuz1);
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, corLuz1);
 
+		if (reflexao)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			float corBlend[4] = {1,1,1,0.9};
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, corBlend);
+			objetoChao->desenha();
+			corBlend[3] = 1;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, corBlend);
+			glDisable(GL_BLEND);
+		}
+
 		//desenha todos os objetos
 		for (unsigned i=0 ; i<objetos.size() ; ++i)
 		{
 			objetos[i]->desenha();
 		}
+		
 	
 		if (modoDebug)
 		{
