@@ -8,14 +8,13 @@
 class Limits
 {
     public:
-        Limits();
+        Limits(std::vector<Objeto*> &objetos);
         void setInc(float nInc);
         float getT(void);
         float getC(void);
         float getL(void);
-		void readModels(std::vector<Objeto*> &objetos);
     private:
-        int readFile(const char *filename);
+        int readFile(const char *filename, std::vector<Objeto*> &objetos);
         int getFloor(float y, const char* arq);
         int getWall(bool xz, const char* arqr, const char *arql);
         int getWallX(FILE *right, FILE *left);
