@@ -90,6 +90,11 @@ int main(int argc, char *argv[])
 	(void)argc;
 	(void)argv;
 
+	//inicializa a SDL
+	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
+
 	std::vector<Objeto*> objetos;
     //Limits: a classe que faz as paredes da sala
     //e contem os limites da sala
@@ -116,11 +121,6 @@ int main(int argc, char *argv[])
 	float raioColisao = 1.0;
 
 	bool modoDebug = false;
-
-	//inicializa a SDL
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
-	SDL_SetVideoMode(600, 600, 32, SDL_OPENGL);
 
 	bool reflexao = false;
 	{
@@ -160,13 +160,13 @@ int main(int argc, char *argv[])
 	);
 
 	//o chao é um objeto especial, usa pra fazer reflexão, então ele ganha uma variável só pra ele! ;)
-	Objeto *objetoChao = new Objeto("walls/p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg");
+	Objeto *objetoChao = new Objeto("p1.obj", Transformacao(0, 0, 0, 0), "floors/wood_floor.jpg");
 	//objetos.push_back(objetoChao);    //chao OK
-	objetos.push_back(new Objeto("walls/p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
-	objetos.push_back(new Objeto("walls/p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
-	objetos.push_back(new Objeto("walls/p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
-	objetos.push_back(new Objeto("walls/p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
-	objetos.push_back(new Objeto("walls/p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
+	objetos.push_back(new Objeto("p2.obj", Transformacao(0, 0, 0, 0)));                             //frente OK
+	objetos.push_back(new Objeto("p3.obj", Transformacao(0, 0, 0, 0)));                             //direita OK
+	objetos.push_back(new Objeto("p4.obj", Transformacao(0, 0, 0, 0)));                             //esquerda OK
+	objetos.push_back(new Objeto("p5.obj", Transformacao(0, 0, 0, 0)));                             //tras OK
+	objetos.push_back(new Objeto("p6.obj", Transformacao(0, 0, 0, 0)));                             //cima OK
 
 	//calcula a AABB de todo mundo pra poder testar contra colisões depois
 	for (unsigned i=0 ; i<objetos.size() ; ++i)
