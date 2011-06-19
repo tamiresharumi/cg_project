@@ -21,11 +21,12 @@ class Limits
         int getWallX(FILE *right, FILE *left);
         int getWallZ(FILE *front, FILE *behind);
         float inc;
-        int C ,L, T;
+        int C ,L, T, J;
         /**
         C de comprimento - tamanho em z
         L de largura - tamanho em x
         T de teto - tamanho em y
+        J de janela - se maior que 0, existe
         */
 };
 
