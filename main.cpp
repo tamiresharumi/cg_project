@@ -314,6 +314,8 @@ int main(int argc, char *argv[])
 					if (objetos[i] != objetoChao)
 						objetos[i]->desenha();
 				}
+				//desenha nosso querido e super legal skybox!
+                desenha_skybox(texturaSkybox, 50.0f);
 			glPopMatrix();
 			glDisable(GL_STENCIL_TEST);
 		}

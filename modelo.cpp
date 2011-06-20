@@ -48,7 +48,7 @@ int Modelo::carrega(const char *arquivo)
 	if (!nVerts || !nNorms || !nTex || !nFaces)
 	{
 		fclose(arq);
-		printf("FUDEU! O arquivo obj non esta correto!");
+		printf("Falta algum parametro em %s, ve isso ai\n", arquivo);
 		return 0;
 	}
 

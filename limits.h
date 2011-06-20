@@ -23,8 +23,8 @@ class Limits
         int readFile(const char *filename, std::vector<Objeto*> &objetos);
         int getFloor(float y, const char* arq);
         int getWall(bool xz, const char* arqr, const char *arql);
-        int getWallX(FILE *right, FILE *left, int defT, int defC);
-        int getWallZ(FILE *front, FILE *behind, int defL, int defT);
+        int getWallX(FILE *wall, float defT, float defC, float L);
+        int getWallZ(FILE *wall, float defL, float defT, float C);
         float inc;
         int C ,L, T, J;
         //em que parede a janela está e em que posicao
