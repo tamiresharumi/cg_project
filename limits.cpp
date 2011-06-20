@@ -206,18 +206,18 @@ int Limits::readFile(const char *filename, std::vector<Objeto*> &objetos)
 
 
 int Limits::getFloor(float y, const char* arq){
-
+//comentario
     float i, j;
-    float px = (L/inc)+ 1;
-    float pz = (C/inc)+1;
-    if((fmod(L, inc) != 0)||(fmod(C, inc) != 0)){
+    float px = (C/inc)+1;
+    float pz = (L/inc)+1;
+    if((fmod(C, inc) != 0)||(fmod(L, inc) != 0)){
         printf("Incremento incompativel!\n");
         return 0;
     }
     FILE* f = fopen(arq, "w+");
     FILE* x = fopen("log_for.log", "w+");
-    for(i=-(L/2.); i<=(L/2.); i+=inc){
-        for(j=-(C/2.); j<=(C/2.); j+=inc){
+    for(i=-(C/2.); i<=(C/2.); i+=inc){
+        for(j=-(L/2.); j<=(L/2.); j+=inc){
             fprintf(f, "v %5.2f %5.2f %5.2f\n", i, y, j);
         }
     }
@@ -263,11 +263,14 @@ int Limits::getWall(bool xz, const char* arqr, const char *arql){
     }
 
     if(!xz){
-        getWallX(a, T/2., C, L);
-        getWallX(b, T/2., C, -L);
+        getWallX(a, T, L, +C/2);
+        getWallX(b, T, L, -C/2);
     }
-    else getWallZ(a, L, T, C);
-    fclose(a);
+    else {
+		getWallZ(a, C, T, L/2);
+		getWallZ(b, C, T, -L/2);
+	}
+	fclose(a);
     fclose(b);
 	return 1;
 }
@@ -280,7 +283,6 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
     float C = defC;
     float py = (T/inc)+1;
     float pz = (C/inc)+1;
-
 
     if((fmod(T, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
@@ -299,9 +301,9 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
     fprintf(wall, "vt 1 1\n");
 
     if (L < 0)
-        fprintf(wall, "vn -1 0 0\n");
-    else
         fprintf(wall, "vn 1 0 0\n");
+    else
+        fprintf(wall, "vn -1 0 0\n");
 
     for(i=0;i<py-1;i++){
         for(j=0;j<pz-1;j++){
@@ -330,8 +332,8 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
 int Limits::getWallZ(FILE* front, float defL, float defT, float C){
 
     float i, j;
-    L = defL;
-    T = defT;
+    float L = defL;
+    float T = defT;
 
     float px = (L/inc)+1;
     float py = (T/inc)+1;

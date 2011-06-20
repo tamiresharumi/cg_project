@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 	glEnable(GL_TEXTURE_2D);
 //	glEnable(GL_COLOR_MATERIAL);
 
-//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//textura do skybox, criada a partir das seis imagens
 	unsigned texturaSkybox = SOIL_load_OGL_cubemap(
