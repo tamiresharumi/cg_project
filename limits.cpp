@@ -96,8 +96,8 @@ int Limits::readFile(const char *filename, std::vector<Objeto*> &objetos)
     if(i>7){
         getFloor(0, "walls/p1.obj");
         getFloor(T, "walls/p6.obj");
-        getWall(0,"walls/p3.obj", "walls/p4.obj");  //parede 3: direita; parede 4: esquerda
-        getWall(1, "walls/p2.obj", "walls/p5.obj"); //parede 2: frente; parede 5: atras
+        getWall(0,"walls/p3.obj", "walls/p4.obj", map);  //parede 3: direita; parede 4: esquerda
+        getWall(1, "walls/p2.obj", "walls/p5.obj", map); //parede 2: frente; parede 5: atras
     }
 
 	//carrega os modelos do mapa
@@ -251,7 +251,7 @@ int Limits::getFloor(float y, const char* arq){
 }
 
 
-int Limits::getWall(bool xz, const char* arqr, const char *arql){
+int Limits::getWall(bool xz, const char* arqr, const char *arql, char map[][0xff]){
 
     FILE *a = fopen(arqr, "w+");
     FILE *b = fopen(arql, "w+");
@@ -263,8 +263,13 @@ int Limits::getWall(bool xz, const char* arqr, const char *arql){
     }
 
     if(!xz){
-        getWallX(a, T, L, +C/2);
-        getWallX(b, T, L, -C/2);
+		int nVerts = 0;
+		int nNorms = 0;
+		int nTex = 0;
+
+        getWallX(a, T, L, +C/2, nVerts, nNorms, nTex);
+		nVerts = nNorms = nTex = 0;
+        getWallX(b, T, L, -C/2, nVerts, nNorms, nTex);
     }
     else {
 		getWallZ(a, C, T, L/2);
@@ -276,13 +281,17 @@ int Limits::getWall(bool xz, const char* arqr, const char *arql){
 }
 
 
-int Limits::getWallX(FILE* wall, float defT, float defC, float L){
+int Limits::getWallX(FILE *wall, float defT, float defC, float L, int &nVerts, int &nNorms, int &nTex) {
 
     float i, j;
     float T = defT;
     float C = defC;
     float py = (T/inc)+1;
     float pz = (C/inc)+1;
+
+	int nV = 0;
+	int nN = 0;
+	int nT = 0;
 
     if((fmod(T, inc) != 0)||(fmod(C, inc) != 0)){
         printf("Incremento incompativel!\n");
@@ -292,6 +301,7 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
     for(i=(T/2); i>=(-T/2); i-=inc){
         for(j=-(C/2.); j<=(C/2.); j+=inc){
             fprintf(wall, "v %5.2f %5.2f %5.2f\n", L, (T/2.)+i, j);
+			++nV;
         }
     }
 
@@ -299,20 +309,22 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
     fprintf(wall, "vt 0 1\n");
     fprintf(wall, "vt 1 0\n");
     fprintf(wall, "vt 1 1\n");
+	nT = 4;
 
     if (L < 0)
         fprintf(wall, "vn 1 0 0\n");
     else
         fprintf(wall, "vn -1 0 0\n");
+	nN = 1;
 
     for(i=0;i<py-1;i++){
         for(j=0;j<pz-1;j++){
             if(L < 0)
                 fprintf(wall, "f %.0f/4/1 %.0f/2/1 %.0f/3/1\n",
-                    (pz*i)+(j+1), (i*pz) + j + 2, (i+1)*pz + (j+1));
+                    (pz*i)+(j+1)+nVerts, (i*pz) + j + 2+nTex, (i+1)*pz + (j+1)+nNorms);
             else
                 fprintf(wall, "f %.0f/2/1 %.0f/1/1 %.0f/4/1\n",
-                    (pz*i)+(j+1), (i+1)*pz + j + 1, (i*pz) + (j+2));
+                    (pz*i)+(j+1)+nVerts, (i+1)*pz + j + 1+nTex, (i*pz) + (j+2)+nNorms);
         }
     }
 
@@ -320,11 +332,15 @@ int Limits::getWallX(FILE* wall, float defT, float defC, float L){
             for(j=1;j<pz;j++){
                 if (L < 0)
                     fprintf(wall, "f %.0f/2/1 %.0f/1/1 %.0f/3/1\n",
-                        (pz*i)+(j+1), (i+1)*pz +(j+1), (i+1)*pz + j);
+                        (pz*i)+(j+1)+nVerts, (i+1)*pz +(j+1)+nTex, (i+1)*pz + j+nNorms);
                 else fprintf(wall, "f %.0f/4/1 %.0f/1/1 %.0f/3/1\n",
-                        (pz*i)+(j+1), (i+1)*pz + j, (i+1)*pz + j+1);
+                        (pz*i)+(j+1)+nVerts, (i+1)*pz + j+nTex, (i+1)*pz + j+1+nNorms);
         }
     }
+
+	nVerts += nV;
+	nTex += nT;
+	nNorms += nN;
 	return 1;
 }
 
